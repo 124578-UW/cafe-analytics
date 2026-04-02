@@ -134,8 +134,8 @@ body{font-family:'DM Sans','Gill Sans','Calibri',sans-serif;background:#111;disp
     </div>
   </div>
   <div class="tabs">
-    <div class="tab on" id="t-vibe" onclick="sw('vibe')">🔮 Vibe Reader</div>
-    <div class="tab" id="t-wrapped" onclick="sw('wrapped')">🌿 Wrapped</div>
+    <div class="tab on" id="t-vibe" onclick="sw('vibe')"> Vibe Reader</div>
+    <div class="tab" id="t-wrapped" onclick="sw('wrapped')"> Wrapped</div>
   </div>
 
   <div class="scr" id="s-vibe">
@@ -165,7 +165,6 @@ body{font-family:'DM Sans','Gill Sans','Calibri',sans-serif;background:#111;disp
 
   <div class="scr" id="s-wrapped" style="display:none">
     <div class="wh">
-      <div class="wtag">💡 Product concept · What if?</div>
       <div class="wttl">Quench Wrapped.<br><em style="font-style:italic;font-weight:400;color:#9dc4b0">Your year in coffee.</em></div>
       <div class="wsub">What if Starbucks told you your coffee personality at the end of every year — your orders, your patterns, your vibe?</div>
     </div>
@@ -174,7 +173,7 @@ body{font-family:'DM Sans','Gill Sans','Calibri',sans-serif;background:#111;disp
       <div class="wstat"><div class="wval">8</div><div class="wlbl">Drinks tried</div></div>
       <div class="wstat"><div class="wval">12</div><div class="wlbl">Week streak</div></div>
     </div>
-    <div style="padding:12px 20px 2px;font-size:13px;font-weight:700;color:#1e3932">Your Winter 2026 · Alex</div>
+    <div style="padding:12px 20px 2px;font-size:13px;font-weight:700;color:#1e3932">Your Winter 2026 !</div>
 
     <div class="wcard">
       <div class="wch"><div class="wctag">Your top drink</div><div class="wcval">Iced Matcha Latte</div></div>
@@ -185,9 +184,11 @@ body{font-family:'DM Sans','Gill Sans','Calibri',sans-serif;background:#111;disp
     </div>
 
     <div class="wcard">
-      <div class="wch"><div class="wctag">Your vibe</div><div class="wcval" id="wvibe-title">☀ Sunny Social</div></div>
-      <div class="wcb">
-        <div style="font-size:13px;color:#1e3932;font-style:italic;line-height:1.65;margin-bottom:8px">Oat milk. Always iced. Cold foam because why not. You probably convinced at least two friends to try matcha. The model clocked you in one order.</div>
+      <div class="wch"><div class="wctag">Your vibe</div><div class="wcval" id="wvibe-title">Matcha Mommy</div></div>
+      <div class="wcb" style="text-align:center">
+        <img id="wrapped-vibe-img" src="https://124578-uw.github.io/cafe-analytics/images/matcha_mommy.jpeg" style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:2px solid #1e3932;margin:0 auto 12px;display:block">
+        <div style="font-size:13px;color:#1e3932;font-style:italic;line-height:1.65;margin-bottom:4px" id="wrapped-vibe-line1">Says 'hi bestie' to strangers and means it.</div>
+        <div style="font-size:13px;color:#1e3932;font-style:italic;line-height:1.65;margin-bottom:8px" id="wrapped-vibe-line2">Somehow hydrated, glowing, and a little dangerous.</div>
         <div style="font-size:11px;color:#aaa">Model confidence: 74% · Trained on 8,083 Quench orders</div>
       </div>
     </div>
@@ -212,13 +213,13 @@ body{font-family:'DM Sans','Gill Sans','Calibri',sans-serif;background:#111;disp
 
     <div class="mnote">
       <div class="mnt">How the Vibe Index works</div>
-      <div class="mnd">Random Forest classifier trained on 8,083 synthetic orders built from real Quench recipe logic. 60% accuracy on 6-class personality prediction — 3.6× above chance. Strongest signal: extra hot → Moody Intense (~99%). Oat milk + cold foam → Sunny Social. Built by Hariharan Sureshkumar, UW MS Data Science, Winter 2026.</div>
+      <div class="mnd">Random Forest classifier trained on 8,083 synthetic orders built from real Quench recipe logic. 60% accuracy on 6-class personality prediction — 3.6× above chance. Strongest signal: extra hot → Moody Intense (~99%). Oat milk + cold foam → Sunny Social.Hariharan Sureshkumar, UW MS Data Science.</div>
     </div>
     <div style="height:20px"></div>
   </div>
 
   <div class="pickup">
-    <div><div class="ptxt">Data Science Portfolio</div><div class="pstore">Hariharan Sureshkumar · UW MS DS</div></div>
+    <div><div class="pstore">Hariharan Sureshkumar · UW MS DS</div></div>
     <div class="cart"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </div>
 </div>
@@ -264,6 +265,20 @@ const P={
   "vscb": "https://124578-uw.github.io/cafe-analytics/images/vscb.jpeg",
   "white_mocha": "https://124578-uw.github.io/cafe-analytics/images/white_mocha.jpeg",
 };
+const VI={
+  "brewski":"https://124578-uw.github.io/cafe-analytics/images/brewski.jpeg",
+  "chill_guy":"https://124578-uw.github.io/cafe-analytics/images/chill_guy.jpeg",
+  "dramatic_but_hydrated":"https://124578-uw.github.io/cafe-analytics/images/dramatic_but_hydrated.jpeg",
+  "espresso_patronum":"https://124578-uw.github.io/cafe-analytics/images/espresso_patronum.jpeg",
+  "hamster":"https://124578-uw.github.io/cafe-analytics/images/hamster.jpeg",
+  "matcha_mommy":"https://124578-uw.github.io/cafe-analytics/images/matcha_mommy.jpeg",
+  "no_talkie":"https://124578-uw.github.io/cafe-analytics/images/no_talkie.jpeg",
+  "pilattes_princess":"https://124578-uw.github.io/cafe-analytics/images/pillattes_princess.jpeg",
+  "sip_happens":"https://124578-uw.github.io/cafe-analytics/images/sip_happens.jpeg",
+  "slaytte":"https://124578-uw.github.io/cafe-analytics/images/slaytte.jpeg",
+  "spill_the_tea":"https://124578-uw.github.io/cafe-analytics/images/spill_the_tea.jpeg",
+};
+
 
 const DRINKS = {
   americano:     {n:"Caffè Americano",         cal:{tall:15,grande:25,venti:30},    img:"americano",        cat:"espresso",hot:true,  a:["shots","decaf","extra_hot","milk","syrup"]},
@@ -313,30 +328,21 @@ const MENU = {
 };
 
 const VIBES = {
-  moody_intense:       {e:"🖤", n:"Moody Intense",          sub:"The Precision Drinker",  bg:"#1a0d1a", desc:"You knew exactly what you wanted before you walked in. Extra hot means you've been burned by a lukewarm drink before — literally. You nod instead of saying thank you. The barista remembered you before you said a word."},
-  sunny_social:        {e:"☀️", n:"Sunny Social",            sub:"The Vibe Curator",        bg:"#0d1e10", desc:"You probably came in with someone. Oat milk because you've been oat milk for years. Cold foam because why not. You complimented the music on your way out. You genuinely meant it."},
-  chill_studious:      {e:"📚", n:"Chill Studious",          sub:"The Focused Regular",     bg:"#0d1020", desc:"Headphones in, laptop open, you knew your order before you left the library. This is fuel, not a treat. You said please and thank you. You always do."},
-  rushed_professional: {e:"💼", n:"Rushed Professional",     sub:"The Efficiency Expert",   bg:"#1a1a0a", desc:"You have a meeting in twelve minutes. You ordered while walking in. You were out the door before the sleeve was on. This happens at least three times a week."},
-  cozy_comfort:        {e:"🧸", n:"Cozy Comfort",            sub:"The Ritual Keeper",       bg:"#1e0e08", desc:"You came here to stay a while. The whipped cream wasn't optional. You probably have a book or a long playlist. You're not rushing anywhere."},
-  adventurous:         {e:"🌀", n:"Adventurous",             sub:"The Seasonal Experimenter",bg:"#081e1e", desc:"You either asked what we'd recommend or picked something you'd never had before. You'll tell someone about this drink later. You might come back tomorrow and order something completely different."},
-  the_algorithm:       {e:"🤖", n:"The Algorithm",           sub:"The Data-Driven Orderer",  bg:"#0d0d1e", desc:"Your order is so consistent the POS system could predict it. You've found the optimal drink and you're not deviating. You don't browse the menu. You never have."},
-  main_character:      {e:"✨", n:"Main Character Energy",   sub:"The One Everyone Notices", bg:"#1e0d18", desc:"Your order is an event. The person behind you in line definitely heard it. Your customizations are a form of self-expression and you're okay with that. The barista is also okay with that."},
-  chaos_agent:         {e:"🔥", n:"Chaos Agent",             sub:"The Unpredictable One",    bg:"#1e0d00", desc:"You ordered something new. Again. The barista double-checked the recipe. You tipped anyway. You live in the refresher section but sometimes you get an espresso just to keep everyone on their toes."},
-  silent_regular:      {e:"🫡", n:"Silent Regular",          sub:"The One Who Just Knows",   bg:"#0a0a0a", desc:"You've ordered the same thing for weeks. You don't need to think about it. The barista has started making it when they see you walk through the door. Respect."},
+  moody_intense:{name:"No Talkie Before Coffee",img:"no_talkie",lines:["If eye contact happens before caffeine, it's legally your fault.","This is a silent film until further notice."]},
+  sunny_social_matcha:{name:"Matcha Mommy",img:"matcha_mommy",lines:["Says 'hi bestie' to strangers and means it.","Somehow hydrated, glowing, and a little dangerous."]},
+  sunny_social_latte:{name:"Slay-te",img:"slaytte",lines:["Ordered oat milk like it was a personality trait.","Walked out like a runway just opened."]},
+  sunny_social_refresher:{name:"Just an Espresso Gurl",img:"hamster",lines:["Came for a drink, stayed for a full social episode.","Knows at least 3 employees' life stories."]},
+  chill_studious_brew:{name:"Chill Guy",img:"chill_guy",lines:["No mods, no stress, just vibing.","Either top of the class or hasn't opened the assignment yet — no in between."]},
+  chill_studious_coffee:{name:"Brewski",img:"brewski",lines:["Drinks coffee like it's water.","Probably says 'it is what it is' and actually believes it."]},
+  rushed_fast:{name:"Sip Happens",img:"sip_happens",lines:["Ordered in 4 words or less.","Blink and they're gone — like a caffeine cryptid."]},
+  rushed_drama:{name:"Dramatic But Hydrated",img:"dramatic_but_hydrated",lines:["Walking at 2x speed with a drink that will be finished in 3 sips.","Time is fake but the stress is real."]},
+  cozy_tea:{name:"Spill the Tea",img:"spill_the_tea",lines:["'I don't like drama' — immediately spills everything.","This drink comes with lore."]},
+  cozy_latte:{name:"Pi-latte-s Princess",img:"pilattes_princess",lines:["Holding that cup like it's a healing crystal.","Main hobby: romanticizing doing nothing."]},
+  adventurous_seasonal:{name:"Espresso Patronum",img:"espresso_patronum",lines:["Saw 'limited time' and took it personally.","Will order something with 4 words you've never heard before."]},
+  adventurous_complex:{name:"Dramatic But Hydrated",img:"dramatic_but_hydrated",lines:["Refreshers with extra this, light that, upside-down chaos.","The drink looks confusing but somehow iconic."]},
 };
 
-const STORIES = {
-  moody_intense:["You knew exactly what you wanted before you walked in. Extra hot means you've been burned by a lukewarm drink before — literally. You nod instead of saying thank you. That's fine, we get it.","There's a precision to this order. You're not here for the ambiance. You're here for the caffeine and you're leaving. The barista remembered you before you said a word."],
-  sunny_social:["You probably came in with someone. Oat milk because you've been oat milk for years. Cold foam because why not. You complimented the music. You meant it.","This order has a whole personality. You're the reason other people try new things. Someone in your group ordered differently because of you."],
-  chill_studious:["Headphones in, laptop open, you knew your order before you left the library. This is fuel, not a treat. You said please and thank you. You always do.","You're a regular without quite being a regular — you come in, order clean, leave. No fuss. The barista gets you ready before you finish saying the size."],
-  rushed_professional:["You have a meeting in twelve minutes. You ordered while walking in. You were out the door before the sleeve was on. This happens at least three times a week.","The order was clean — no unnecessary customizations. You've optimized. You know exactly what you need and you've made peace with it."],
-  cozy_comfort:["You came here to stay a while. The whipped cream wasn't optional. You probably have a book or a long playlist. You might order something to eat too.","This is a whole ritual for you. You're not rushing anywhere. The barista hopes you stay."],
-  adventurous:["You either asked what we'd recommend or picked something you'd never had. You'll tell someone about this drink later.","You're not a creature of habit. This order says you read menus like other people read novels. You might come back tomorrow and order something completely different."],
-  the_algorithm:["Your order is so consistent the POS system could predict it. You've found the optimal drink and you're sticking with it.","Three visits this week. Same drink. Same size. No modifications. This is mastery."],
-  main_character:["Your order is an event. The person behind you definitely heard it. Your customizations are self-expression.","The barista wrote your name carefully. Your order took the full label. You are the reason some drinks exist."],
-  chaos_agent:["You ordered something new. Again. The barista double-checked the recipe. You tipped anyway.","You live in the refresher section but sometimes you get an espresso just to keep everyone guessing."],
-  silent_regular:["Same thing for weeks. You don't need to think about it. The barista has started making it when they see you walk in.","Consistent. Unfussy. Respected. The barista knows your order and your approximate arrival window."],
-};
+
 
 function img(key){const s=P[key];return s?`<img src="${s}" style="width:100%;height:100%;object-fit:cover">`:''}
 
@@ -494,33 +500,62 @@ function parseText(t){
 
 function showVibe(probs,targetId){
   const entries=Object.entries(probs).sort((a,b)=>b[1]-a[1]);
-  const[topK,topP]=entries[0];
-  const v=VIBES[topK];
-  const st=STORIES[topK]?STORIES[topK][Math.floor(Math.random()*STORIES[topK].length)]:v.desc;
-  document.getElementById(targetId).innerHTML=`
-    <div class="vout">
-      <div class="vc" style="background:${v.bg}">
-        <span class="vbig">${v.e}</span>
-        <div style="font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px">${v.sub}</div>
-        <div class="vtitle">${v.n}</div>
-        <div class="vdesc">${st}</div>
-        <span class="vconf">${Math.round(topP*100)}% confidence</span>
-      </div>
-      <div class="pbars">
-        <div class="ptitle">Full breakdown</div>
-        ${entries.slice(0,6).map(([k,p])=>`<div class="pr"><div class="plbl"><span>${VIBES[k].e} ${VIBES[k].n}</span><span>${Math.round(p*100)}%</span></div><div class="ptrk"><div class="pf" style="width:${Math.round(p*100)}%"></div></div></div>`).join('')}
-      </div>
-    </div>`;
+  const[topKey,topProb]=entries[0];
+  const parsed=window._lastParsed||{};
+  const v=getVibe(topKey,parsed);
+  const imgSrc=VI[v.img]||'';
+  const conf=Math.round(topProb*100);
+  document.getElementById(targetId).innerHTML=
+    '<div style="background:#1e3932;border-radius:20px;padding:28px 20px 24px;color:#fff;text-align:center;margin:10px 16px 0">'+
+    '<img src="'+imgSrc+'" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.2);margin-bottom:16px;display:block;margin-left:auto;margin-right:auto">'+
+    '<div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#7fad94;margin-bottom:8px;font-weight:600">'+conf+'% — that is you</div>'+
+    '<div style="font-family:Georgia,serif;font-size:22px;font-weight:700;font-style:italic;margin-bottom:14px;line-height:1.2">'+v.name+'</div>'+
+    v.lines.map(function(l){return '<div style="font-size:13px;color:#a8d5b5;line-height:1.7;margin-bottom:4px">'+l+'</div>';}).join('')+
+    '</div>';
   document.getElementById(targetId).scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
+
+function getVibe(topKey,parsed){
+  const d=parsed.drink?DRINKS[parsed.drink]:null;
+  const cat=d?d.cat:'latte';
+  const key=parsed.drink||'';
+  if(topKey==='moody_intense') return VIBES.moody_intense;
+  if(topKey==='sunny_social'){
+    if(cat==='latte'&&(key.includes('matcha')||key.includes('lavender'))) return VIBES.sunny_social_matcha;
+    if(cat==='refresher') return VIBES.sunny_social_refresher;
+    return VIBES.sunny_social_latte;
+  }
+  if(topKey==='chill_studious'){
+    if(cat==='coffee') return VIBES.chill_studious_coffee;
+    return VIBES.chill_studious_brew;
+  }
+  if(topKey==='rushed_professional'){
+    if(parsed.extra_shot||parsed.cold_foam) return VIBES.rushed_drama;
+    return VIBES.rushed_fast;
+  }
+  if(topKey==='cozy_comfort'){
+    if(cat==='tea') return VIBES.cozy_tea;
+    return VIBES.cozy_latte;
+  }
+  if(topKey==='adventurous'){
+    if(cat==='refresher'||parsed.cold_foam) return VIBES.adventurous_complex;
+    return VIBES.adventurous_seasonal;
+  }
+  return VIBES.moody_intense;
+}
+
+
 function readDrink(){
+  window._lastParsed={drink:cDrink,cat:DRINKS[cDrink]?DRINKS[cDrink].cat:"latte",extra_shot:cShot?1:0,extra_hot:cHot?1:0,cold_foam:cFoam?1:0};
   const d=DRINKS[cDrink];
   const p={drink:cDrink,size:cSize,milk:cMilk,syrup:cSyrup,iced:!d.hot,extra_shot:cShot?1:0,decaf:cDecaf?1:0,extra_hot:cHot?1:0,cold_foam:cFoam?1:0,whip:cWhip?1:0,no_ice:cIce==='none'?1:0,pumps:cPumps};
   showVibe(predict(p),'d-vibe');
 }
 
 function readText(){
+  const _p=parseText(document.getElementById('otxt').value.trim());
+  window._lastParsed=_p;
   const txt=document.getElementById('otxt').value.trim();
   if(!txt)return;
   const p=parseText(txt);
