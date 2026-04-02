@@ -30,7 +30,7 @@ This is a fully interactive mockup of what that feature could look like, built o
 
 ## Try it
 
-open it live: **[quench-cafe.github.io](https://github.com)** *(GitHub Pages link — enable in repo settings)*
+open it live: **[quench-cafe.github.io](https://124578-uw.github.io/cafe-analytics/)** 
 
 ---
 
