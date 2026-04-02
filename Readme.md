@@ -16,7 +16,7 @@ A Random Forest classifier trained on 8,083 synthetic orders, built using real Q
 
 **Features used:** drink category, milk type, syrup, size, ice preference, extra shots, cold foam, whipped cream, food pairing, time of day.
 
-**Result:** ~60% accuracy on 6-class personality prediction — compared to 16.7% random chance. The model's strongest single signal: `extra_hot = True` → Moody Intense (~99% confidence when combined with extra shot). Oat milk + cold foam reliably predicts Sunny Social. Cold brew with no modifications predicts Chill Studious. These patterns emerged from the data — they weren't hardcoded.
+**Result:** Approximately 60% accuracy on 6-class personality prediction — compared to 16.7% random chance. The model's strongest single signal: `extra_hot = True` → Moody Intense (~99% confidence when combined with extra shot). Oat milk + cold foam reliably predicts Sunny Social. Cold brew with no modifications predicts Chill Studious. These patterns emerged from the data — they weren't hardcoded.
 
 **Vibe types:** Moody Intense · Sunny Social · Chill Studious · Rushed Professional · Cozy Comfort · Adventurous · The Algorithm · Main Character Energy · Chaos Agent · Silent Regular
 
