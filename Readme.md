@@ -1,6 +1,6 @@
 # Quench Café · Vibe Predictor and Wrapped feature
 
-**I worked as a barista at Quench (Center Table, University of Washington) as part time — Shifts 3h45m each, making at least 20 drinks per busy day.**
+**I worked as a barista at Quench (Center Table, University of Washington) as part time last quarter**
 
 At some point I started noticing patterns. The person who always ordered extra hot with an extra shot. The oat milk cold foam crowd. The cold brew minimalists who never changed their order. I started wondering: *can you predict someone's personality from their drink order?*
 
@@ -30,9 +30,7 @@ This is a fully interactive mockup of what that feature could look like, built o
 
 ## Try it
 
-Download `quench_app.html` and open it in any browser. No server, no install, no Python required. The full app runs client-side.
-
-Or open it live: **[quench-cafe.github.io](https://github.com)** *(GitHub Pages link — enable in repo settings)*
+open it live: **[quench-cafe.github.io](https://github.com)** *(GitHub Pages link — enable in repo settings)*
 
 ---
 
@@ -100,5 +98,5 @@ Synthetic data was generated using real Quench pump/shot counts from the laminat
 
 ## About
 
-**Hariharan Sureshkumar** — MS Data Science, University of Washington.  
-[LinkedIn](https://linkedin.com/in/yourprofile) · [Email](mailto:you@uw.edu)
+**Hari haran Suresh kumar** — MS Data Science at University of Washington, Seattle.  
+[LinkedIn](https://www.linkedin.com/in/hariharan-sureshkumar-engineer/) · [Email](mail to: hhsk@uw.edu)
