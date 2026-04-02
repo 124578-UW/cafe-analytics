@@ -1,4 +1,4 @@
-# Quench Café · Vibe Predictor and Wrapped feature
+# Quench Cafe · Vibe Predictor and Wrapped feature
 
 **I worked as a barista at Quench (Center Table, University of Washington) as part time last quarter**
 
