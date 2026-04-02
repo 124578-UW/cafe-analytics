@@ -1,1 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Quench · Vibe Reader</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans','Gill Sans','Calibri',sans-serif;background:#111;display:flex;justify-content:center;padding:20px 0;min-height:100vh}
+.phone{width:390px;background:#fff;border-radius:44px;overflow:hidden;box-shadow:0 0 0 11px #1a1a1a,0 0 0 13px #2a2a2a,0 40px 100px rgba(0,0,0,0.6);display:flex;flex-direction:column;min-height:844px;position:relative}
+.notch{width:126px;height:34px;background:#000;border-radius:0 0 20px 20px;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:99}
+.sb{background:#1e3932;padding:16px 24px 6px;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.hdr{background:#1e3932;padding:4px 20px 16px;flex-shrink:0}
+.hdr h1{color:#fff;font-size:26px;font-weight:800;letter-spacing:-.5px;font-family:'Playfair Display',Georgia,serif}
+.hdr p{color:#7fad94;font-size:12px;margin-top:1px}
+.tabs{display:flex;background:#1e3932;flex-shrink:0;border-bottom:1px solid #2d5a3d}
+.tab{flex:1;padding:12px 4px;color:#5c8a72;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;text-align:center;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s}
+.tab.on{color:#fff;border-bottom-color:#00704a}
+.scr{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fff}
+.scr::-webkit-scrollbar{display:none}
 
+/* Menu */
+.mint{padding:14px 20px 4px;font-size:15px;font-weight:800;color:#1e3932}
+.mhint{padding:0 20px 8px;font-size:12px;color:#999}
+.obox{margin:0 16px 10px;border:1.5px solid #c8ddd5;border-radius:14px;overflow:hidden;background:#fff}
+.obox textarea{width:100%;padding:12px 14px;font-size:14px;color:#1e3932;border:none;resize:none;font-family:inherit;outline:none;background:#fff}
+.ohint{padding:5px 14px 9px;font-size:11px;color:#aaa;background:#fafaf9;border-top:1px solid #f0f0f0}
+.rbtn{display:block;width:calc(100% - 32px);margin:0 16px 14px;padding:15px;background:#00704a;color:#fff;border:none;border-radius:500px;font-size:15px;font-weight:800;cursor:pointer;text-align:center;letter-spacing:.02em}
+.rbtn:active{background:#005a3c;transform:scale(.98)}
+.cat{font-size:14px;font-weight:800;color:#1e3932;padding:12px 20px 6px;border-top:5px solid #f5f5f5}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#ebebeb}
+.dc{background:#fff;padding:12px 8px 14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;text-align:center;transition:background .12s}
+.dc:active{background:#f0f0f0}
+.di{width:86px;height:86px;border-radius:50%;background:#1e3932;overflow:hidden;margin-bottom:8px;flex-shrink:0}
+.di img{width:100%;height:100%;object-fit:cover;display:block}
+.dn{font-size:12px;color:#1e3932;font-weight:600;line-height:1.3}
+.dcal{font-size:11px;color:#999;margin-top:2px}
+
+/* Detail */
+.bk{display:flex;align-items:center;gap:8px;padding:13px 18px;cursor:pointer;color:#00704a;font-size:14px;font-weight:700;border-bottom:.5px solid #f0f0f0}
+.dh{padding:20px 20px 12px;text-align:center}
+.dlg{width:148px;height:148px;border-radius:50%;background:#1e3932;overflow:hidden;margin:0 auto 14px}
+.dlg img{width:100%;height:100%;object-fit:cover;display:block}
+.dname{font-size:20px;font-weight:800;color:#1e3932;font-family:'Playfair Display',Georgia,serif}
+.dcalb{font-size:13px;color:#888;margin-top:3px}
+.sh{font-size:14px;font-weight:800;color:#1e3932;padding:12px 20px 8px;border-top:.5px solid #eee}
+.srow{display:flex;gap:8px;padding:0 16px 12px}
+.so{flex:1;border:1.5px solid #ddd;border-radius:10px;padding:9px 4px;text-align:center;cursor:pointer;transition:all .15s}
+.so.sel{border-color:#00704a;background:#eaf4ef}
+.scup{font-size:18px;margin-bottom:2px}
+.sn{font-size:11px;font-weight:700;color:#1e3932}
+.soz{font-size:10px;color:#aaa}
+.cr{display:flex;justify-content:space-between;align-items:center;padding:11px 20px;border-bottom:.5px solid #f5f5f5}
+.cl{font-size:14px;color:#1e3932;font-weight:500}
+.cs{font-size:11px;color:#aaa;margin-top:1px}
+.csel{border:1px solid #ddd;border-radius:20px;padding:6px 10px;font-size:12px;color:#1e3932;background:#fff;-webkit-appearance:none;min-width:90px;text-align:center}
+.tog{width:42px;height:24px;background:#d0d0d0;border-radius:12px;cursor:pointer;position:relative;flex-shrink:0;transition:background .18s}
+.tog.on{background:#00704a}
+.tog::after{content:'';width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .18s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.tog.on::after{left:20px}
+
+/* Vibe result */
+.vout{padding:0 0 20px}
+.vc{margin:10px 16px 0;border-radius:20px;padding:24px 20px 20px;color:#fff;position:relative;overflow:hidden}
+.vbig{font-size:48px;display:block;margin-bottom:6px;line-height:1}
+.vtitle{font-size:24px;font-weight:800;margin-bottom:8px;line-height:1.1;font-family:'Playfair Display',Georgia,serif;font-style:italic}
+.vsub{font-size:12px;opacity:.7;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.vdesc{font-size:13px;line-height:1.65;opacity:.88;margin-bottom:16px}
+.vconf{display:inline-block;background:rgba(255,255,255,.15);border-radius:20px;padding:5px 16px;font-size:12px;font-weight:700}
+.pbars{margin:10px 16px 0;background:#fff;border-radius:16px;border:.5px solid #e8e8e8;padding:16px}
+.ptitle{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.pr{margin:8px 0}
+.plbl{display:flex;justify-content:space-between;font-size:12px;color:#1e3932;margin-bottom:4px;font-weight:500}
+.ptrk{height:5px;background:#e8f3ef;border-radius:3px;overflow:hidden}
+.pf{height:100%;background:#00704a;border-radius:3px;transition:width .6s ease}
+
+/* Wrapped */
+.wh{background:#1e3932;padding:26px 20px 22px}
+.wtag{font-size:10px;color:#5c7f6e;text-transform:uppercase;letter-spacing:.14em;font-weight:700;margin-bottom:8px}
+.wttl{font-size:24px;color:#fff;font-weight:800;line-height:1.1;margin-bottom:8px;font-family:'Playfair Display',Georgia,serif}
+.wsub{font-size:12px;color:#7fad94;line-height:1.6}
+.wstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:12px 16px;background:#f5f5f5}
+.wstat{background:#fff;border-radius:10px;padding:12px 6px;text-align:center;border:.5px solid #e8e8e8}
+.wval{font-size:24px;color:#1e3932;font-weight:800}
+.wlbl{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;font-weight:600}
+.wcard{margin:0 16px 12px;background:#fff;border-radius:14px;border:.5px solid #e8e8e8;overflow:hidden}
+.wch{background:#1e3932;padding:12px 16px}
+.wctag{font-size:10px;color:#5c7f6e;text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.wcval{font-size:17px;color:#fff;font-weight:800;margin-top:2px}
+.wcb{padding:14px 16px}
+.wb{margin:7px 0}
+.wbl{display:flex;justify-content:space-between;font-size:12px;color:#1e3932;margin-bottom:3px;font-weight:500}
+.wbt{height:5px;background:#e8f3ef;border-radius:3px;overflow:hidden}
+.wbf{height:100%;background:#00704a;border-radius:3px}
+.wpeak{display:flex;align-items:flex-end;gap:3px;height:52px;margin-bottom:5px}
+.wpb{flex:1;border-radius:2px 2px 0 0}
+.mnote{margin:0 16px 16px;background:#eaf4ef;border-radius:12px;padding:14px 16px;border-left:3px solid #00704a}
+.mnt{font-size:12px;font-weight:700;color:#1e3932;margin-bottom:5px}
+.mnd{font-size:11px;color:#3d6b57;line-height:1.65}
+
+.pickup{background:#1e3932;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ptxt{font-size:10px;color:#7fad94}
+.pstore{font-size:12px;color:#fff;font-weight:700}
+.cart{background:rgba(255,255,255,.12);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+@media(max-width:420px){body{padding:0}.phone{border-radius:0;box-shadow:none;width:100%;min-height:100vh}}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="sb">
+    <span id="clock">9:41</span>
+    <div style="display:flex;gap:6px;align-items:center">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="white" opacity=".9"><path d="M8 2C5.6 2 3.4 3 1.8 4.6L0 2.8C2 .9 4.9 0 8 0s6 .9 8 2.8L14.2 4.6C12.6 3 10.4 2 8 2z" opacity=".5"/><path d="M8 5.5C6.2 5.5 4.5 6.2 3.3 7.4L1.5 5.6C3.1 4 5.4 3 8 3s4.9 1 6.5 2.6L12.7 7.4C11.5 6.2 9.8 5.5 8 5.5z"/><circle cx="8" cy="10.5" r="1.5"/></svg>
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="white" opacity=".9"><rect x="0" y="4" width="2.5" height="8" rx="1"/><rect x="4" y="2.5" width="2.5" height="9.5" rx="1"/><rect x="8" y="0" width="2.5" height="12" rx="1"/><rect x="12" y="0" width="2.5" height="12" rx="1" opacity=".3"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3" stroke="white" stroke-opacity=".35"/><rect x="22" y="3.5" width="2.5" height="5" rx="1.25" fill="white" fill-opacity=".4"/><rect x="2" y="2" width="16" height="8" rx="2" fill="white"/></svg>
+    </div>
+  </div>
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="48" fill="#00704a" stroke="#fff" stroke-width="2"/>
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#fff" stroke-width="1.5" opacity=".4"/>
+        <text x="50" y="44" text-anchor="middle" fill="#fff" font-size="11" font-family="Georgia,serif" font-weight="700" letter-spacing="2">QUENCH</text>
+        <text x="50" y="58" text-anchor="middle" fill="#d4edda" font-size="8" font-family="Georgia,serif" letter-spacing="1">CAFÉ</text>
+        <path d="M28 65 Q50 72 72 65" fill="none" stroke="#fff" stroke-width="1.2" opacity=".5"/>
+        <path d="M30 35 Q50 28 70 35" fill="none" stroke="#fff" stroke-width="1.2" opacity=".5"/>
+      </svg>
+      <div>
+        <h1>Quench</h1>
+        <p>Center Table · University of Washington</p>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab on" id="t-vibe" onclick="sw('vibe')">🔮 Vibe Reader</div>
+    <div class="tab" id="t-wrapped" onclick="sw('wrapped')">🌿 Wrapped</div>
+  </div>
+
+  <div class="scr" id="s-vibe">
+    <div id="v-menu">
+      <div class="mint">What does your order say about you?</div>
+      <div class="mhint">Type it exactly like you'd say it at the counter</div>
+      <div class="obox">
+        <textarea id="otxt" rows="3" placeholder="e.g. Iced oat milk matcha latte with vanilla cold foam grande&#10;Double shot extra hot americano&#10;Strawberry açaí refresher venti no ice"></textarea>
+        <div class="ohint">Or tap any drink below to build your order</div>
+      </div>
+      <button class="rbtn" onclick="readText()">Read My Vibe</button>
+      <div id="txt-out"></div>
+      <div class="cat">Hot Coffee</div><div class="grid" id="g-hot"></div>
+      <div class="cat">Cold Coffee</div><div class="grid" id="g-cold"></div>
+      <div class="cat">Matcha & Tea</div><div class="grid" id="g-tea"></div>
+      <div class="cat">Refreshers & More</div><div class="grid" id="g-refresh"></div>
+      <div style="height:24px"></div>
+    </div>
+    <div id="v-detail" style="display:none">
+      <div class="bk" onclick="showMenu()">
+        <svg width="18" height="16" viewBox="0 0 18 16" fill="none"><path d="M7 1L1 8l6 7M1 8h16" stroke="#00704a" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back to menu
+      </div>
+      <div id="d-body" class="scr" style="max-height:none;overflow:visible"></div>
+    </div>
+  </div>
+
+  <div class="scr" id="s-wrapped" style="display:none">
+    <div class="wh">
+      <div class="wtag">💡 Product concept · What if?</div>
+      <div class="wttl">Quench Wrapped.<br><em style="font-style:italic;font-weight:400;color:#9dc4b0">Your year in coffee.</em></div>
+      <div class="wsub">What if Starbucks told you your coffee personality at the end of every year — your orders, your patterns, your vibe?</div>
+    </div>
+    <div class="wstats">
+      <div class="wstat"><div class="wval">47</div><div class="wlbl">Your orders</div></div>
+      <div class="wstat"><div class="wval">8</div><div class="wlbl">Drinks tried</div></div>
+      <div class="wstat"><div class="wval">12</div><div class="wlbl">Week streak</div></div>
+    </div>
+    <div style="padding:12px 20px 2px;font-size:13px;font-weight:700;color:#1e3932">Your Winter 2026 · Alex</div>
+
+    <div class="wcard">
+      <div class="wch"><div class="wctag">Your top drink</div><div class="wcval">Iced Matcha Latte</div></div>
+      <div class="wcb">
+        <div style="font-size:12px;color:#999;margin-bottom:10px">22 of your orders · Oat milk · Vanilla cold foam · Grande</div>
+        <div id="wbars"></div>
+      </div>
+    </div>
+
+    <div class="wcard">
+      <div class="wch"><div class="wctag">Your vibe</div><div class="wcval" id="wvibe-title">☀ Sunny Social</div></div>
+      <div class="wcb">
+        <div style="font-size:13px;color:#1e3932;font-style:italic;line-height:1.65;margin-bottom:8px">Oat milk. Always iced. Cold foam because why not. You probably convinced at least two friends to try matcha. The model clocked you in one order.</div>
+        <div style="font-size:11px;color:#aaa">Model confidence: 74% · Trained on 8,083 Quench orders</div>
+      </div>
+    </div>
+
+    <div class="wcard">
+      <div class="wch"><div class="wctag">Your peak hour</div><div class="wcval">4:30 PM</div></div>
+      <div class="wcb">
+        <div style="font-size:12px;color:#999;margin-bottom:10px">Your busiest month: February · 3 visits in one week during midterms</div>
+        <canvas id="wpeak" width="320" height="80" style="width:100%;height:80px"></canvas>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#bbb;font-weight:600;margin-top:4px"><span>8am</span><span>10am</span><span>12pm</span><span>2pm</span><span>4pm</span><span>6pm</span><span>8pm</span></div>
+      </div>
+    </div>
+
+    <div class="wcard">
+      <div class="wch"><div class="wctag">Your favourite day</div><div class="wcval">Tuesday afternoons</div></div>
+      <div class="wcb">
+        <div style="font-size:12px;color:#999;margin-bottom:10px">You ordered 18 of your 47 drinks on a Tuesday. The matcha was always waiting.</div>
+        <canvas id="daybars" width="320" height="60" style="width:100%;height:60px"></canvas>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#bbb;font-weight:600;margin-top:4px"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      </div>
+    </div>
+
+    <div class="mnote">
+      <div class="mnt">How the Vibe Index works</div>
+      <div class="mnd">Random Forest classifier trained on 8,083 synthetic orders built from real Quench recipe logic. 60% accuracy on 6-class personality prediction — 3.6× above chance. Strongest signal: extra hot → Moody Intense (~99%). Oat milk + cold foam → Sunny Social. Built by Hariharan Sureshkumar, UW MS Data Science, Winter 2026.</div>
+    </div>
+    <div style="height:20px"></div>
+  </div>
+
+  <div class="pickup">
+    <div><div class="ptxt">Data Science Portfolio</div><div class="pstore">Hariharan Sureshkumar · UW MS DS</div></div>
+    <div class="cart"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </div>
+</div>
+
+<script>
+const P={
+  "americano": "https://124578-uw.github.io/cafe-analytics/images/americano.jpeg",
+  "cafe_latte": "https://124578-uw.github.io/cafe-analytics/images/cafe_latte.jpeg",
+  "caffe_mocha": "https://124578-uw.github.io/cafe-analytics/images/caffe_mocha.jpeg",
+  "cappuccino": "https://124578-uw.github.io/cafe-analytics/images/cappuccino.jpeg",
+  "caramel_mac": "https://124578-uw.github.io/cafe-analytics/images/caramel_mac.jpeg",
+  "chai_latte": "https://124578-uw.github.io/cafe-analytics/images/chai_latte.jpeg",
+  "chamomile": "https://124578-uw.github.io/cafe-analytics/images/chamomile.jpeg",
+  "cold_brew": "https://124578-uw.github.io/cafe-analytics/images/cold_brew.jpeg",
+  "cold_milk": "https://124578-uw.github.io/cafe-analytics/images/cold_milk.jpeg",
+  "dragon_drink": "https://124578-uw.github.io/cafe-analytics/images/dragon_drink.jpeg",
+  "earl_grey": "https://124578-uw.github.io/cafe-analytics/images/earl_grey.jpeg",
+  "emperors_clouds": "https://124578-uw.github.io/cafe-analytics/images/emperors_clouds.jpeg",
+  "espresso_mac": "https://124578-uw.github.io/cafe-analytics/images/espresso_mac.jpeg",
+  "flat_white": "https://124578-uw.github.io/cafe-analytics/images/flat_white.jpeg",
+  "honey_citrus": "https://124578-uw.github.io/cafe-analytics/images/honey_citrus.jpeg",
+  "hot_choc": "https://124578-uw.github.io/cafe-analytics/images/hot_choc.jpeg",
+  "brown_sugar": "https://124578-uw.github.io/cafe-analytics/images/brown_sugar.jpeg",
+  "iced_americano": "https://124578-uw.github.io/cafe-analytics/images/iced_americano.jpeg",
+  "iced_latte": "https://124578-uw.github.io/cafe-analytics/images/iced_latte.jpeg",
+  "iced_mocha": "https://124578-uw.github.io/cafe-analytics/images/iced_mocha.jpeg",
+  "iced_mac": "https://124578-uw.github.io/cafe-analytics/images/iced_mac.jpeg",
+  "iced_coffee": "https://124578-uw.github.io/cafe-analytics/images/iced_coffee.jpeg",
+  "lavender_matcha": "https://124578-uw.github.io/cafe-analytics/images/lavender_matcha.jpeg",
+  "iced_matcha": "https://124578-uw.github.io/cafe-analytics/images/iced_matcha.jpeg",
+  "iced_white_mocha": "https://124578-uw.github.io/cafe-analytics/images/iced_white_mocha.jpeg",
+  "lemonade": "https://124578-uw.github.io/cafe-analytics/images/lemonade.jpeg",
+  "london_fog": "https://124578-uw.github.io/cafe-analytics/images/london_fog.jpeg",
+  "mango_lemonade": "https://124578-uw.github.io/cafe-analytics/images/mango_lemonade.jpeg",
+  "mango_dragonfruit": "https://124578-uw.github.io/cafe-analytics/images/mango_dragonfruit.jpeg",
+  "matcha_latte": "https://124578-uw.github.io/cafe-analytics/images/matcha_latte.jpeg",
+  "mint_majesty": "https://124578-uw.github.io/cafe-analytics/images/mint_majesty.jpeg",
+  "pink_drink": "https://124578-uw.github.io/cafe-analytics/images/pink_drink.jpeg",
+  "royal_eb": "https://124578-uw.github.io/cafe-analytics/images/royal_eb.jpeg",
+  "strawberry_acai": "https://124578-uw.github.io/cafe-analytics/images/strawberry_acai.jpeg",
+  "steamed_milk": "https://124578-uw.github.io/cafe-analytics/images/steamed_milk.jpeg",
+  "strawberry_lemonade": "https://124578-uw.github.io/cafe-analytics/images/strawberry_lemonade.jpeg",
+  "vscb": "https://124578-uw.github.io/cafe-analytics/images/vscb.jpeg",
+  "white_mocha": "https://124578-uw.github.io/cafe-analytics/images/white_mocha.jpeg",
+};
+
+const DRINKS = {
+  americano:     {n:"Caffè Americano",         cal:{tall:15,grande:25,venti:30},    img:"americano",        cat:"espresso",hot:true,  a:["shots","decaf","extra_hot","milk","syrup"]},
+  cappuccino:    {n:"Cappuccino",               cal:{tall:80,grande:140,venti:200},  img:"cappuccino",       cat:"espresso",hot:true,  a:["shots","decaf","milk","foam"]},
+  caffe_mocha:   {n:"Caffè Mocha",              cal:{tall:290,grande:370,venti:470}, img:"caffe_mocha",      cat:"espresso",hot:true,  a:["shots","decaf","milk","whip"]},
+  white_mocha:   {n:"White Chocolate Mocha",    cal:{tall:360,grande:470,venti:580}, img:"white_mocha",      cat:"espresso",hot:true,  a:["shots","decaf","milk","whip"]},
+  caramel_mac:   {n:"Caramel Macchiato",        cal:{tall:190,grande:250,venti:330}, img:"caramel_mac",      cat:"espresso",hot:true,  a:["shots","decaf","milk"]},
+  flat_white:    {n:"Flat White",               cal:{tall:170,grande:220,venti:300}, img:"flat_white",       cat:"espresso",hot:true,  a:["shots","decaf","milk"]},
+  espresso_mac:  {n:"Espresso Macchiato",       cal:{tall:15,grande:20,venti:25},    img:"espresso_mac",     cat:"espresso",hot:true,  a:["shots","decaf","milk"]},
+  cafe_latte:    {n:"Caffè Latte",              cal:{tall:190,grande:240,venti:290}, img:"cafe_latte",       cat:"espresso",hot:true,  a:["shots","decaf","milk","syrup","foam"]},
+  hot_choc:      {n:"Hot Chocolate",            cal:{tall:300,grande:400,venti:520}, img:"hot_choc",         cat:"hot",     hot:true,  a:["milk","whip","extra_hot"]},
+  cold_brew:     {n:"Cold Brew",                cal:{tall:5,grande:5,venti:5},       img:"cold_brew",        cat:"coffee",  hot:false, a:["milk","syrup","cold_foam","ice"]},
+  vscb:          {n:"Vanilla Sweet Cream Cold Brew",cal:{tall:110,grande:200,venti:320},img:"vscb",          cat:"coffee",  hot:false, a:["ice"]},
+  iced_latte:    {n:"Iced Caffè Latte",         cal:{tall:130,grande:190,venti:250}, img:"iced_latte",       cat:"espresso",hot:false, a:["shots","decaf","milk","syrup","cold_foam","ice"]},
+  iced_mac:      {n:"Iced Caramel Macchiato",   cal:{tall:180,grande:250,venti:330}, img:"iced_mac",         cat:"espresso",hot:false, a:["shots","decaf","milk","ice"]},
+  brown_sugar:   {n:"Iced Brown Sugar Oatmilk Shaken Espresso",cal:{tall:120,grande:200,venti:290},img:"brown_sugar",cat:"espresso",hot:false,a:["shots","ice","pumps"]},
+  iced_mocha:    {n:"Iced Caffè Mocha",         cal:{tall:250,grande:350,venti:450}, img:"iced_mocha",       cat:"espresso",hot:false, a:["shots","decaf","milk","whip","ice"]},
+  iced_white_mocha:{n:"Iced White Chocolate Mocha",cal:{tall:330,grande:430,venti:530},img:"iced_white_mocha",cat:"espresso",hot:false,a:["shots","decaf","milk","whip","ice"]},
+  iced_americano:{n:"Iced Caffè Americano",     cal:{tall:15,grande:25,venti:30},    img:"iced_americano",   cat:"espresso",hot:false, a:["shots","decaf","milk","ice"]},
+  iced_coffee:   {n:"Iced Coffee",              cal:{tall:80,grande:100,venti:140},  img:"iced_coffee",      cat:"coffee",  hot:false, a:["milk","syrup","ice"]},
+  iced_matcha:   {n:"Iced Matcha Latte",        cal:{tall:200,grande:280,venti:360}, img:"iced_matcha",      cat:"latte",   hot:false, a:["milk","syrup","cold_foam","ice"]},
+  matcha_latte:  {n:"Matcha Latte",             cal:{tall:200,grande:240,venti:310}, img:"matcha_latte",     cat:"latte",   hot:true,  a:["milk","syrup"]},
+  lavender_matcha:{n:"Iced Lavender Cream Matcha",cal:{tall:230,grande:310,venti:400},img:"lavender_matcha", cat:"latte",   hot:false, a:["milk","ice"]},
+  chai_latte:    {n:"Chai Latte",               cal:{tall:240,grande:310,venti:380}, img:"chai_latte",       cat:"tea",     hot:true,  a:["milk","syrup"]},
+  london_fog:    {n:"London Fog Latte",         cal:{tall:200,grande:250,venti:320}, img:"london_fog",       cat:"tea",     hot:true,  a:["milk","syrup"]},
+  honey_citrus:  {n:"Honey Citrus Mint Tea",    cal:{tall:130,grande:180,venti:230}, img:"honey_citrus",     cat:"tea",     hot:true,  a:[]},
+  royal_eb:      {n:"Royal English Breakfast Tea",cal:{tall:0,grande:0,venti:0},    img:"royal_eb",         cat:"tea",     hot:true,  a:[]},
+  earl_grey:     {n:"Earl Grey Tea",            cal:{tall:0,grande:0,venti:0},       img:"earl_grey",        cat:"tea",     hot:true,  a:[]},
+  chamomile:     {n:"Chamomile Mint Blossom Tea",cal:{tall:0,grande:0,venti:0},     img:"chamomile",        cat:"tea",     hot:true,  a:[]},
+  mint_majesty:  {n:"Mint Majesty Tea",         cal:{tall:0,grande:0,venti:0},       img:"mint_majesty",     cat:"tea",     hot:true,  a:[]},
+  strawberry_acai:{n:"Strawberry Açaí Refresher",cal:{tall:90,grande:130,venti:200},img:"strawberry_acai",  cat:"refresh", hot:false, a:["inclusions","ice","cold_foam"]},
+  strawberry_lemonade:{n:"Strawberry Açaí Lemonade Refresher",cal:{tall:120,grande:190,venti:280},img:"strawberry_lemonade",cat:"refresh",hot:false,a:["inclusions","ice"]},
+  pink_drink:    {n:"Pink Drink",               cal:{tall:140,grande:200,venti:290}, img:"pink_drink",       cat:"refresh", hot:false, a:["inclusions","ice"]},
+  mango_dragonfruit:{n:"Mango Dragonfruit Refresher",cal:{tall:90,grande:130,venti:200},img:"mango_dragonfruit",cat:"refresh",hot:false,a:["inclusions","ice"]},
+  mango_lemonade:{n:"Mango Dragonfruit Lemonade Refresher",cal:{tall:120,grande:190,venti:280},img:"mango_lemonade",cat:"refresh",hot:false,a:["inclusions","ice"]},
+  dragon_drink:  {n:"Dragon Drink",             cal:{tall:130,grande:190,venti:280}, img:"dragon_drink",     cat:"refresh", hot:false, a:["inclusions","ice"]},
+  lemonade:      {n:"Lemonade",                 cal:{tall:140,grande:200,venti:280}, img:"lemonade",         cat:"other",   hot:false, a:["ice"]},
+  cold_milk:     {n:"Cold Milk",                cal:{tall:90,grande:130,venti:180},  img:"cold_milk",        cat:"other",   hot:false, a:[]},
+  steamed_milk:  {n:"Steamed Milk",             cal:{tall:130,grande:190,venti:250}, img:"steamed_milk",     cat:"other",   hot:true,  a:[]},
+};
+
+const MENU = {
+  "g-hot":    ["americano","cappuccino","caffe_mocha","white_mocha","caramel_mac","flat_white","espresso_mac","cafe_latte","hot_choc"],
+  "g-cold":   ["cold_brew","vscb","iced_latte","iced_mac","brown_sugar","iced_mocha","iced_white_mocha","iced_americano","iced_coffee"],
+  "g-tea":    ["iced_matcha","matcha_latte","lavender_matcha","chai_latte","london_fog","honey_citrus","royal_eb","earl_grey","chamomile","mint_majesty"],
+  "g-refresh":["strawberry_acai","strawberry_lemonade","pink_drink","mango_dragonfruit","mango_lemonade","dragon_drink","lemonade","cold_milk","steamed_milk"],
+};
+
+const VIBES = {
+  moody_intense:       {e:"🖤", n:"Moody Intense",          sub:"The Precision Drinker",  bg:"#1a0d1a", desc:"You knew exactly what you wanted before you walked in. Extra hot means you've been burned by a lukewarm drink before — literally. You nod instead of saying thank you. The barista remembered you before you said a word."},
+  sunny_social:        {e:"☀️", n:"Sunny Social",            sub:"The Vibe Curator",        bg:"#0d1e10", desc:"You probably came in with someone. Oat milk because you've been oat milk for years. Cold foam because why not. You complimented the music on your way out. You genuinely meant it."},
+  chill_studious:      {e:"📚", n:"Chill Studious",          sub:"The Focused Regular",     bg:"#0d1020", desc:"Headphones in, laptop open, you knew your order before you left the library. This is fuel, not a treat. You said please and thank you. You always do."},
+  rushed_professional: {e:"💼", n:"Rushed Professional",     sub:"The Efficiency Expert",   bg:"#1a1a0a", desc:"You have a meeting in twelve minutes. You ordered while walking in. You were out the door before the sleeve was on. This happens at least three times a week."},
+  cozy_comfort:        {e:"🧸", n:"Cozy Comfort",            sub:"The Ritual Keeper",       bg:"#1e0e08", desc:"You came here to stay a while. The whipped cream wasn't optional. You probably have a book or a long playlist. You're not rushing anywhere."},
+  adventurous:         {e:"🌀", n:"Adventurous",             sub:"The Seasonal Experimenter",bg:"#081e1e", desc:"You either asked what we'd recommend or picked something you'd never had before. You'll tell someone about this drink later. You might come back tomorrow and order something completely different."},
+  the_algorithm:       {e:"🤖", n:"The Algorithm",           sub:"The Data-Driven Orderer",  bg:"#0d0d1e", desc:"Your order is so consistent the POS system could predict it. You've found the optimal drink and you're not deviating. You don't browse the menu. You never have."},
+  main_character:      {e:"✨", n:"Main Character Energy",   sub:"The One Everyone Notices", bg:"#1e0d18", desc:"Your order is an event. The person behind you in line definitely heard it. Your customizations are a form of self-expression and you're okay with that. The barista is also okay with that."},
+  chaos_agent:         {e:"🔥", n:"Chaos Agent",             sub:"The Unpredictable One",    bg:"#1e0d00", desc:"You ordered something new. Again. The barista double-checked the recipe. You tipped anyway. You live in the refresher section but sometimes you get an espresso just to keep everyone on their toes."},
+  silent_regular:      {e:"🫡", n:"Silent Regular",          sub:"The One Who Just Knows",   bg:"#0a0a0a", desc:"You've ordered the same thing for weeks. You don't need to think about it. The barista has started making it when they see you walk through the door. Respect."},
+};
+
+const STORIES = {
+  moody_intense:["You knew exactly what you wanted before you walked in. Extra hot means you've been burned by a lukewarm drink before — literally. You nod instead of saying thank you. That's fine, we get it.","There's a precision to this order. You're not here for the ambiance. You're here for the caffeine and you're leaving. The barista remembered you before you said a word."],
+  sunny_social:["You probably came in with someone. Oat milk because you've been oat milk for years. Cold foam because why not. You complimented the music. You meant it.","This order has a whole personality. You're the reason other people try new things. Someone in your group ordered differently because of you."],
+  chill_studious:["Headphones in, laptop open, you knew your order before you left the library. This is fuel, not a treat. You said please and thank you. You always do.","You're a regular without quite being a regular — you come in, order clean, leave. No fuss. The barista gets you ready before you finish saying the size."],
+  rushed_professional:["You have a meeting in twelve minutes. You ordered while walking in. You were out the door before the sleeve was on. This happens at least three times a week.","The order was clean — no unnecessary customizations. You've optimized. You know exactly what you need and you've made peace with it."],
+  cozy_comfort:["You came here to stay a while. The whipped cream wasn't optional. You probably have a book or a long playlist. You might order something to eat too.","This is a whole ritual for you. You're not rushing anywhere. The barista hopes you stay."],
+  adventurous:["You either asked what we'd recommend or picked something you'd never had. You'll tell someone about this drink later.","You're not a creature of habit. This order says you read menus like other people read novels. You might come back tomorrow and order something completely different."],
+  the_algorithm:["Your order is so consistent the POS system could predict it. You've found the optimal drink and you're sticking with it.","Three visits this week. Same drink. Same size. No modifications. This is mastery."],
+  main_character:["Your order is an event. The person behind you definitely heard it. Your customizations are self-expression.","The barista wrote your name carefully. Your order took the full label. You are the reason some drinks exist."],
+  chaos_agent:["You ordered something new. Again. The barista double-checked the recipe. You tipped anyway.","You live in the refresher section but sometimes you get an espresso just to keep everyone guessing."],
+  silent_regular:["Same thing for weeks. You don't need to think about it. The barista has started making it when they see you walk in.","Consistent. Unfussy. Respected. The barista knows your order and your approximate arrival window."],
+};
+
+function img(key){const s=P[key];return s?`<img src="${s}" style="width:100%;height:100%;object-fit:cover">`:''}
+
+function buildMenus(){
+  Object.entries(MENU).forEach(([id,keys])=>{
+    document.getElementById(id).innerHTML=keys.map(k=>{
+      const d=DRINKS[k];
+      const c=d.cal.grande>0?d.cal.grande+' Cal':'';
+      return `<div class="dc" onclick="openDrink('${k}')"><div class="di">${img(d.img)}</div><div class="dn">${d.n}</div><div class="dcal">${c}</div></div>`;
+    }).join('');
+  });
+}
+
+let cDrink=null,cSize='grande',cMilk='whole',cSyrup='none';
+let cHot=false,cShot=false,cFoam=false,cWhip=false,cDecaf=false,cPumps='standard',cIce='regular';
+
+function openDrink(k){
+  cDrink=k;cSize='grande';
+  cMilk=DRINKS[k].cat==='refresh'?'none':'whole';
+  cSyrup='none';cHot=cShot=cFoam=cWhip=cDecaf=false;cPumps='standard';cIce='regular';
+  document.getElementById('v-menu').style.display='none';
+  document.getElementById('v-detail').style.display='block';
+  renderDetail();
+}
+function showMenu(){
+  document.getElementById('v-menu').style.display='block';
+  document.getElementById('v-detail').style.display='none';
+}
+
+function renderDetail(){
+  const d=DRINKS[cDrink];
+  const cal=d.cal[cSize]||d.cal.grande;
+  const a=d.a;
+  const oz={tall:'12 fl oz',grande:'16 fl oz',venti:'24 fl oz'};
+  const tog=(id,val,fn)=>`<div class="tog${val?' on':''}" id="tg_${id}" onclick="tg_${fn}()"></div>`;
+  const rows=[
+    a.includes('milk')?`<div class="cr"><div><div class="cl">Milk</div></div><select class="csel" onchange="cMilk=this.value">${['Whole','Oat','Almond','Soy','Coconut','Nonfat'].map(m=>`<option value="${m.toLowerCase()}"${cMilk===m.toLowerCase()?' selected':''}>${m}</option>`).join('')}</select></div>`:'',
+    a.includes('syrup')?`<div class="cr"><div><div class="cl">Syrup</div></div><select class="csel" onchange="cSyrup=this.value">${['none','vanilla','caramel','hazelnut','brown_sugar','toffee_nut','cinnamon_dolce'].map(s=>`<option value="${s}"${cSyrup===s?' selected':''}>${s.replace(/_/g,' ')}</option>`).join('')}</select></div>`:'',
+    a.includes('shots')?`<div class="cr"><div><div class="cl">Extra shot</div><div class="cs">+1 espresso</div></div>${tog('shot',cShot,'shot')}</div>`:'',
+    a.includes('decaf')?`<div class="cr"><div><div class="cl">Decaf</div></div>${tog('decaf',cDecaf,'decaf')}</div>`:'',
+    a.includes('extra_hot')?`<div class="cr"><div><div class="cl">Extra hot</div><div class="cs">Above standard temp</div></div>${tog('hot',cHot,'hot')}</div>`:'',
+    a.includes('cold_foam')?`<div class="cr"><div><div class="cl">Cold foam</div><div class="cs">Vanilla sweet cream</div></div>${tog('foam',cFoam,'foam')}</div>`:'',
+    a.includes('whip')?`<div class="cr"><div><div class="cl">Whipped cream</div></div>${tog('whip',cWhip,'whip')}</div>`:'',
+    a.includes('ice')?`<div class="cr"><div><div class="cl">Ice</div></div><select class="csel" onchange="cIce=this.value"><option value="regular">Regular ice</option><option value="light">Light ice</option><option value="extra">Extra ice</option><option value="none">No ice</option></select></div>`:'',
+    a.includes('pumps')?`<div class="cr"><div><div class="cl">Brown sugar pumps</div></div><select class="csel" onchange="cPumps=this.value"><option value="standard">Standard</option><option value="half">Half pump</option><option value="1">1 pump</option></select></div>`:'',
+    a.includes('inclusions')?`<div class="cr"><div><div class="cl">Inclusions</div><div class="cs">Fruit pieces</div></div>${tog('inc',true,'inc')}</div>`:'',
+  ].filter(Boolean).join('');
+
+  document.getElementById('d-body').innerHTML=`
+    <div class="dh">
+      <div class="dlg">${img(d.img)}</div>
+      <div class="dname">${d.n}</div>
+      <div class="dcalb">${cal} Calories</div>
+    </div>
+    <div class="sh">Size</div>
+    <div class="srow">${['tall','grande','venti'].map(s=>`<div class="so${cSize===s?' sel':''}" onclick="setSz('${s}')"><div class="scup">${s==='tall'?'☕':s==='grande'?'☕':'☕'}</div><div class="sn" style="font-size:${s==='tall'?'10':s==='grande'?'11':'12'}px">${s[0].toUpperCase()+s.slice(1)}</div><div class="soz">${s==='tall'?'12':s==='grande'?'16':'24'} fl oz</div><div class="soz">${d.cal[s]} cal</div></div>`).join('')}</div>
+    ${rows?`<div class="sh">Customized recipe</div>${rows}`:''}
+    <div style="padding:14px 16px 4px"><button class="rbtn" onclick="readDrink()">Read My Vibe</button></div>
+    <div id="d-vibe"></div>
+  `;
+}
+
+function setSz(s){cSize=s;renderDetail()}
+function tg_shot(){cShot=!cShot;renderDetail()}
+function tg_hot(){cHot=!cHot;renderDetail()}
+function tg_foam(){cFoam=!cFoam;renderDetail()}
+function tg_whip(){cWhip=!cWhip;renderDetail()}
+function tg_decaf(){cDecaf=!cDecaf;renderDetail()}
+function tg_inc(){}
+
+function predict(p){
+  const d=p.drink?DRINKS[p.drink]:null;
+  const cat=d?d.cat:'latte';
+  let s={moody_intense:2,sunny_social:2,chill_studious:2,rushed_professional:2,cozy_comfort:2,adventurous:2,the_algorithm:1,main_character:1,chaos_agent:1,silent_regular:1};
+  if(p.extra_hot){s.moody_intense+=42;s.rushed_professional+=14}
+  if(p.extra_shot){s.moody_intense+=22;s.rushed_professional+=12;s.the_algorithm+=8}
+  if(p.milk==='oat'){s.sunny_social+=26;s.adventurous+=10;s.main_character+=8}
+  if(p.cold_foam){s.sunny_social+=22;s.main_character+=12;s.adventurous+=6}
+  if(p.whip){s.cozy_comfort+=18;s.sunny_social+=5;s.main_character+=8}
+  if(!p.iced&&cat!=='refresh'){s.cozy_comfort+=12;s.moody_intense+=8}
+  if(p.iced){s.sunny_social+=14;s.chill_studious+=8;s.chaos_agent+=5}
+  if(cat==='refresh'){s.sunny_social+=28;s.chaos_agent+=14;s.main_character+=8}
+  if(cat==='hot'){s.cozy_comfort+=38;s.silent_regular+=10}
+  if(cat==='coffee'&&!p.extra_shot&&!p.cold_foam){s.chill_studious+=28;s.rushed_professional+=18;s.silent_regular+=14;s.the_algorithm+=10}
+  if(cat==='espresso'&&!p.extra_shot&&p.milk==='none'){s.rushed_professional+=24;s.moody_intense+=14;s.the_algorithm+=12}
+  if(cat==='tea'){s.cozy_comfort+=22;s.chill_studious+=14;s.silent_regular+=10}
+  if(p.pumps==='half'){s.moody_intense+=32;s.the_algorithm+=15}
+  if(p.no_ice){s.moody_intense+=14;s.the_algorithm+=10}
+  if(p.decaf){s.cozy_comfort+=12;s.chill_studious+=8}
+  if(p.syrup&&p.syrup!=='none'){s.sunny_social+=8;s.adventurous+=6;s.main_character+=5}
+  if(cat==='latte'&&(p.milk==='oat'||p.milk==='almond')){s.main_character+=10;s.sunny_social+=8}
+  if(p.drink==='lavender_matcha'||p.drink==='dragon_drink'){s.chaos_agent+=20;s.adventurous+=15;s.main_character+=12}
+  Object.keys(s).forEach(k=>s[k]+=Math.random()*5);
+  const tot=Object.values(s).reduce((a,b)=>a+b,0);
+  const out={};
+  Object.entries(s).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>out[k]=v/tot);
+  return out;
+}
+
+function parseText(t){
+  t=t.toLowerCase();
+  let p={drink:null,size:'grande',milk:'whole',syrup:'none',iced:false,extra_shot:0,decaf:0,extra_hot:0,cold_foam:0,whip:0,no_ice:0,pumps:'standard'};
+  if(/\btall\b/.test(t))p.size='tall';else if(/\bventi\b/.test(t))p.size='venti';
+  if(/\boat\b/.test(t))p.milk='oat';else if(/\balmond\b/.test(t))p.milk='almond';else if(/\bsoy\b/.test(t))p.milk='soy';else if(/\bno milk|black\b/.test(t))p.milk='none';
+  if(/\bvanilla\b/.test(t))p.syrup='vanilla';if(/\bcaramel\b/.test(t))p.syrup='caramel';if(/\bhazelnut\b/.test(t))p.syrup='hazelnut';if(/\bbrown sugar\b/.test(t))p.syrup='brown_sugar';
+  p.extra_shot=/extra shot|double shot|double\b/.test(t)?1:0;
+  p.decaf=/decaf/.test(t)?1:0;
+  p.extra_hot=/extra hot/.test(t)?1:0;
+  p.cold_foam=/cold foam|sweet cream/.test(t)?1:0;
+  p.whip=/whip/.test(t)?1:0;
+  p.no_ice=/no ice/.test(t)?1:0;
+  if(/half pump/.test(t))p.pumps='half';
+  const ic=/\biced?\b/.test(t);
+  const pats=[
+    [/iced brown sugar|brown sugar.*shaken|bsose/,'brown_sugar'],
+    [/iced caramel macchiato|iced.*macchiato/,'iced_mac'],
+    [/caramel macchiato|macchiato/,'caramel_mac'],
+    [/lavender.*matcha|iced lavender/,'lavender_matcha'],
+    [/iced matcha|matcha.*iced/,'iced_matcha'],
+    [/matcha/,ic?'iced_matcha':'matcha_latte'],
+    [/london fog/,'london_fog'],
+    [/chai/,'chai_latte'],
+    [/vanilla sweet cream cold brew|vscb/,'vscb'],
+    [/cold brew/,'cold_brew'],
+    [/flat white/,'flat_white'],
+    [/iced white (choc|chocolate)|iced white mocha/,'iced_white_mocha'],
+    [/white (choc|chocolate)|white mocha/,'white_mocha'],
+    [/iced (caffe |caffè )?(mocha|chocolate)/,'iced_mocha'],
+    [/(caffe |caffè )?mocha/,ic?'iced_mocha':'caffe_mocha'],
+    [/pink drink/,'pink_drink'],
+    [/dragon drink/,'dragon_drink'],
+    [/strawberry.*lemonade/,'strawberry_lemonade'],
+    [/strawberry|acai|açaí/,'strawberry_acai'],
+    [/mango.*lemonade/,'mango_lemonade'],
+    [/mango|dragonfruit/,'mango_dragonfruit'],
+    [/iced (caffe |caffè )?latte/,'iced_latte'],
+    [/iced americano/,'iced_americano'],
+    [/americano/,ic?'iced_americano':'americano'],
+    [/cappuccino/,'cappuccino'],
+    [/espresso macchiato/,'espresso_mac'],
+    [/hot chocolate|hot choc/,'hot_choc'],
+    [/earl grey/,'earl_grey'],
+    [/english breakfast/,'royal_eb'],
+    [/honey citrus/,'honey_citrus'],
+    [/chamomile/,'chamomile'],
+    [/mint majesty/,'mint_majesty'],
+    [/lemonade/,'lemonade'],
+    [/(caffe |caffè )?latte/,ic?'iced_latte':'cafe_latte'],
+  ];
+  for(const[pat,key]of pats){if(pat.test&&pat.test(t)){const k=typeof key==='string'?key:key;if(DRINKS[k]){p.drink=k;break;}}else if(pat.test&&pat.test(t)&&DRINKS[key]){p.drink=key;break;}}
+  for(const[pat,key]of pats){const k=typeof key==='string'?key:key;if(pat.test(t)&&DRINKS[k]){p.drink=k;break;}}
+  p.iced=p.drink?!DRINKS[p.drink].hot:ic;
+  return p;
+}
+
+function showVibe(probs,targetId){
+  const entries=Object.entries(probs).sort((a,b)=>b[1]-a[1]);
+  const[topK,topP]=entries[0];
+  const v=VIBES[topK];
+  const st=STORIES[topK]?STORIES[topK][Math.floor(Math.random()*STORIES[topK].length)]:v.desc;
+  document.getElementById(targetId).innerHTML=`
+    <div class="vout">
+      <div class="vc" style="background:${v.bg}">
+        <span class="vbig">${v.e}</span>
+        <div style="font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px">${v.sub}</div>
+        <div class="vtitle">${v.n}</div>
+        <div class="vdesc">${st}</div>
+        <span class="vconf">${Math.round(topP*100)}% confidence</span>
+      </div>
+      <div class="pbars">
+        <div class="ptitle">Full breakdown</div>
+        ${entries.slice(0,6).map(([k,p])=>`<div class="pr"><div class="plbl"><span>${VIBES[k].e} ${VIBES[k].n}</span><span>${Math.round(p*100)}%</span></div><div class="ptrk"><div class="pf" style="width:${Math.round(p*100)}%"></div></div></div>`).join('')}
+      </div>
+    </div>`;
+  document.getElementById(targetId).scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function readDrink(){
+  const d=DRINKS[cDrink];
+  const p={drink:cDrink,size:cSize,milk:cMilk,syrup:cSyrup,iced:!d.hot,extra_shot:cShot?1:0,decaf:cDecaf?1:0,extra_hot:cHot?1:0,cold_foam:cFoam?1:0,whip:cWhip?1:0,no_ice:cIce==='none'?1:0,pumps:cPumps};
+  showVibe(predict(p),'d-vibe');
+}
+
+function readText(){
+  const txt=document.getElementById('otxt').value.trim();
+  if(!txt)return;
+  const p=parseText(txt);
+  showVibe(predict(p),'txt-out');
+}
+
+function sw(t){
+  ['vibe','wrapped'].forEach(x=>{
+    document.getElementById('t-'+x).classList.toggle('on',x===t);
+    document.getElementById('s-'+x).style.display=x===t?'block':'none';
+  });
+}
+
+// Wrapped charts
+const wbData=[{n:'Iced Matcha Latte',p:47},{n:'Pink Drink',p:19},{n:'Iced Chai Latte',p:15},{n:'Vanilla Sweet Cream Cold Brew',p:11},{n:'Other drinks',p:8}];
+document.getElementById('wbars').innerHTML=wbData.map(b=>`<div class="wb"><div class="wbl"><span>${b.n}</span><span>${b.p}%</span></div><div class="wbt"><div class="wbf" style="width:${b.p}%"></div></div></div>`).join('');
+
+// Draw smooth line chart for peak hours
+function drawLine(canvasId, data, color){
+  const c = document.getElementById(canvasId);
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.offsetWidth || 320;
+  const H = c.offsetHeight || 80;
+  c.width = W * window.devicePixelRatio;
+  c.height = H * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  const max = Math.max(...data);
+  const pad = {t:8, b:4, l:4, r:4};
+  const w = W - pad.l - pad.r;
+  const h = H - pad.t - pad.b;
+  const pts = data.map((v,i)=>({
+    x: pad.l + (i/(data.length-1))*w,
+    y: pad.t + h - (v/max)*h
+  }));
+  // gradient fill
+  const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t+h);
+  grad.addColorStop(0, color+'33');
+  grad.addColorStop(1, color+'00');
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for(let i=1;i<pts.length;i++){
+    const cx=(pts[i-1].x+pts[i].x)/2;
+    ctx.bezierCurveTo(cx,pts[i-1].y,cx,pts[i].y,pts[i].x,pts[i].y);
+  }
+  ctx.lineTo(pts[pts.length-1].x, pad.t+h);
+  ctx.lineTo(pts[0].x, pad.t+h);
+  ctx.closePath();
+  ctx.fillStyle=grad;
+  ctx.fill();
+  // line
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++){
+    const cx=(pts[i-1].x+pts[i].x)/2;
+    ctx.bezierCurveTo(cx,pts[i-1].y,cx,pts[i].y,pts[i].x,pts[i].y);
+  }
+  ctx.strokeStyle=color;
+  ctx.lineWidth=2;
+  ctx.stroke();
+  // peak dot
+  const peak=pts.indexOf(pts.reduce((a,b)=>a.y<b.y?a:b));
+  ctx.beginPath();
+  ctx.arc(pts[peak].x,pts[peak].y,4,0,Math.PI*2);
+  ctx.fillStyle=color;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(pts[peak].x,pts[peak].y,2,0,Math.PI*2);
+  ctx.fillStyle='#fff';
+  ctx.fill();
+}
+
+function drawBars(canvasId, data, color, highlight){
+  const c = document.getElementById(canvasId);
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.offsetWidth || 320;
+  const H = c.offsetHeight || 60;
+  c.width = W * window.devicePixelRatio;
+  c.height = H * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  const max = Math.max(...data);
+  const pad = 4;
+  const gap = 4;
+  const bw = (W - pad*2 - gap*(data.length-1)) / data.length;
+  data.forEach((v,i)=>{
+    const bh = ((v/max) * (H-pad*2));
+    const x = pad + i*(bw+gap);
+    const y = H - pad - bh;
+    ctx.beginPath();
+    ctx.roundRect(x, y, bw, bh, [3,3,0,0]);
+    ctx.fillStyle = i===highlight ? color : color+'55';
+    ctx.fill();
+  });
+}
+
+setTimeout(()=>{
+  drawLine('wpeak', [4,6,10,16,28,42,38,22,12,6], '#00704a');
+  drawBars('daybars', [6,18,8,7,5,2,1], '#00704a', 1);
+}, 100);
+
+buildMenus();
+
+// Live clock
+function updateClock(){
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  const el = document.getElementById('clock');
+  if(el) el.textContent = h+':'+m;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+</script>
+</body>
+</html>
