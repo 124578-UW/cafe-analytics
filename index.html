@@ -267,17 +267,19 @@ const P={
   "white_mocha": "https://124578-uw.github.io/cafe-analytics/images/white_mocha.jpeg",
 };
 const VI={
-  "brewski":"https://124578-uw.github.io/cafe-analytics/images/brewski.jpeg",
-  "chill_guy":"https://124578-uw.github.io/cafe-analytics/images/chill_guy.jpeg",
-  "dramatic_but_hydrated":"https://124578-uw.github.io/cafe-analytics/images/dramatic_but_hydrated.jpeg",
-  "espresso_patronum":"https://124578-uw.github.io/cafe-analytics/images/espresso_patronum.jpeg",
-  "hamster":"https://124578-uw.github.io/cafe-analytics/images/hamster.jpeg",
-  "matcha_mommy":"https://124578-uw.github.io/cafe-analytics/images/matcha_mommy.jpeg",
-  "no_talkie":"https://124578-uw.github.io/cafe-analytics/images/no_talkie.jpeg",
-  "pilattes_princess":"https://124578-uw.github.io/cafe-analytics/images/pilattes_princess.jpeg",
-  "sip_happens":"https://124578-uw.github.io/cafe-analytics/images/sip_happens.jpeg",
-  "slaytte":"https://124578-uw.github.io/cafe-analytics/images/slaytte.jpeg",
-  "spill_the_tea":"https://124578-uw.github.io/cafe-analytics/images/spill_the_tea.jpeg",
+  "brewski":               "https://124578-uw.github.io/cafe-analytics/images/brewski.jpeg",
+  "chill_guy":             "https://124578-uw.github.io/cafe-analytics/images/chill_guy.jpeg",
+  "dramatic_but_hydrated": "https://124578-uw.github.io/cafe-analytics/images/dramatic_but_hydrated.jpeg",
+  "espresso_patronum":     "https://124578-uw.github.io/cafe-analytics/images/espresso_patronum.jpeg",
+  "hamster":               "https://124578-uw.github.io/cafe-analytics/images/hamster.jpeg",
+  "matcha_mommy":          "https://124578-uw.github.io/cafe-analytics/images/matcha_mommy.jpeg",
+  "no_talkie":             "https://124578-uw.github.io/cafe-analytics/images/no_talkie.jpeg",
+  "pilattes_princess":     "https://124578-uw.github.io/cafe-analytics/images/pilattes_princess.jpeg",
+  "sip_happens":           "https://124578-uw.github.io/cafe-analytics/images/sip_happens.jpeg",
+  "slaytte":               "https://124578-uw.github.io/cafe-analytics/images/slaytte.jpeg",
+  "spill_the_tea":         "https://124578-uw.github.io/cafe-analytics/images/spill_the_tea.jpeg",
+  "cat_pinkdrink":         "https://124578-uw.github.io/cafe-analytics/images/cat_pinkdrink.jpeg",
+  "coffeebara":            "https://124578-uw.github.io/cafe-analytics/images/coffeebara.jpeg",
 };
 
 
@@ -517,33 +519,63 @@ function showVibe(probs,targetId){
 }
 
 
-function getVibe(topKey,parsed){
-  const d=parsed.drink?DRINKS[parsed.drink]:null;
-  const cat=d?d.cat:'latte';
-  const key=parsed.drink||'';
-  if(topKey==='moody_intense') return VIBES.moody_intense;
-  if(topKey==='sunny_social'){
-    if(cat==='latte'&&(key.includes('matcha')||key.includes('lavender'))) return VIBES.sunny_social_matcha;
-    if(cat==='refresh') return VIBES.sunny_social_refresher;
+function getVibe(topKey, parsed){
+  const d = parsed.drink ? DRINKS[parsed.drink] : null;
+  const cat = d ? d.cat : 'latte';
+  const key = parsed.drink || '';
+
+  // MATCHA — always matcha_mommy
+  if(key.includes('matcha') || key.includes('lavender_matcha'))
+    return VIBES.sunny_social_matcha;
+
+  // REFRESHERS — alternate pilattes_princess and cat_pinkdrink
+  if(cat === 'refresh'){
+    const r = [
+      {name:"Pi-latte-s Princess", img:"pilattes_princess", lines:["Holding that cup like it's a healing crystal.","Main hobby: romanticizing doing nothing."]},
+      {name:"Just vibing",         img:"cat_pinkdrink",     lines:["Came for the pink drink, stayed for the aesthetic.","The inclusions are non-negotiable."]}
+    ];
+    return r[Math.floor(Math.random()*2)];
+  }
+
+  // CHAI LATTE + LONDON FOG — slaytte
+  if(key === 'chai_latte' || key === 'london_fog')
     return VIBES.sunny_social_latte;
+
+  // BREWED TEAS — brewski (Shrek) or spill_the_tea (Umbridge)
+  if(cat === 'tea'){
+    const t = [
+      {name:"Brewski",       img:"brewski",       lines:["Drinks tea like it's a personality trait.","Probably says 'it is what it is' and actually believes it."]},
+      {name:"Spill the Tea", img:"spill_the_tea", lines:["'I don't like drama' — immediately spills everything.","This drink comes with lore."]}
+    ];
+    return t[Math.floor(Math.random()*2)];
   }
-  if(topKey==='chill_studious'){
-    if(cat==='coffee') return VIBES.chill_studious_coffee;
+
+  // LATTES (non-matcha) — slaytte
+  if(cat === 'latte')
+    return VIBES.sunny_social_latte;
+
+  // HOT CHOCOLATE — chill guy
+  if(cat === 'hot')
     return VIBES.chill_studious_brew;
+
+  // ESPRESSO + COFFEE — rotate all 6
+  if(cat === 'espresso' || cat === 'coffee'){
+    if(parsed.extra_hot && parsed.extra_shot)
+      return VIBES.moody_intense;
+    if(parsed.extra_shot)
+      return {name:"Espresso Patronum", img:"espresso_patronum", lines:["Saw 'extra shot' and took it personally.","Casting spells, drinking shots, no further questions."]};
+    const e = [
+      {name:"Coffeebara",            img:"coffeebara",            lines:["Just here for the iced coffee, no drama.","Capybara energy: unbothered, hydrated, fed."]},
+      {name:"Chill Guy",             img:"chill_guy",             lines:["No mods, no stress, just vibing.","Either top of the class or hasn't opened the assignment yet."]},
+      {name:"Dramatic But Hydrated", img:"dramatic_but_hydrated", lines:["Walking at 2x speed with a drink done in 3 sips.","Time is fake but the stress is real."]},
+      {name:"Sip Happens",           img:"sip_happens",           lines:["Ordered in 4 words or less.","Blink and they're gone — like a caffeine cryptid."]},
+      {name:"Espresso Patronum",     img:"espresso_patronum",     lines:["Saw 'limited time' and took it personally.","Will order something with 4 words you've never heard before."]}
+    ];
+    return e[Math.floor(Math.random()*e.length)];
   }
-  if(topKey==='rushed_professional'){
-    if(parsed.extra_shot||parsed.cold_foam) return VIBES.rushed_drama;
-    return VIBES.rushed_fast;
-  }
-  if(topKey==='cozy_comfort'){
-    if(cat==='tea') return VIBES.cozy_tea;
-    return VIBES.cozy_latte;
-  }
-  if(topKey==='adventurous'){
-    if(cat==='refresh'||parsed.cold_foam) return VIBES.adventurous_complex;
-    return VIBES.adventurous_seasonal;
-  }
-  return VIBES.moody_intense;
+
+  // FALLBACK
+  return {name:"Sip Happens", img:"sip_happens", lines:["Ordered in 4 words or less.","Blink and they're gone."]};
 }
 
 
