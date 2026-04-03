@@ -1,6 +1,9 @@
+cat > requirements.txt << 'EOF'
 streamlit
 pandas
 numpy
 scikit-learn
-matplotlibpython-dotenv
+matplotlib
+python-dotenv
 groq
+EOF
