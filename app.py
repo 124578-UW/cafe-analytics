@@ -1,19 +1,20 @@
 """
-app.py — Quench Cafe · Vibe Predictor
+app.py - Quench Cafe · Vibe Predictor
 ======================================
 Streamlit app with:
 - Live Random Forest training from synthetic dataset
-- Ollama LLM integration for personalized vibe descriptions
+- Groq API LLM integration for personalized vibe descriptions
 - Real drink photos via drink_images_data.py
 
 Run: streamlit run app.py
-Requires: ollama serve running in a separate terminal
 """
+
+import os, sys, json
+from dotenv import load_dotenv
+load_dotenv()
 
 import streamlit as st
 import pandas as pd
-import os, sys, requests, json
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 
@@ -49,89 +50,88 @@ def train_model():
 
 model, le, feature_cols = train_model()
 
-# ── Ollama LLM description generator ──────────────────────────────────────────
+# ── Groq LLM description generator ────────────────────────────────────────────
 def generate_description(drink_name, size, milk, syrup, extra_shot,
                           extra_hot, cold_foam, whipped_cream, vibe_name, confidence):
     """
-    Calls Ollama running locally to generate a personalized vibe description.
-    Falls back to a default description if Ollama is not available.
+    Calls Groq API (free tier) to generate a personalized vibe description
+    using Llama 3.1 hosted in the cloud. Falls back gracefully if unavailable.
     """
-    # Build a natural language summary of the order
     mods = []
     if extra_shot:    mods.append("extra shot")
     if extra_hot:     mods.append("extra hot")
     if cold_foam:     mods.append("vanilla cold foam")
     if whipped_cream: mods.append("whipped cream")
-    milk_str  = f"{milk} milk" if milk not in ["none",""] else "no milk"
-    syrup_str = f"{syrup} syrup" if syrup not in ["None","none",""] else ""
-    order_str = f"{size} {drink_name}"
-    if milk_str != "no milk": order_str += f" with {milk_str}"
-    if syrup_str:             order_str += f", {syrup_str}"
-    if mods:                  order_str += f", {', '.join(mods)}"
 
-    prompt = f"""Someone just ordered a {order_str} at a university cafe.
-A machine learning model predicted their personality type as "{vibe_name}" with {confidence}% confidence.
+    milk_str  = (milk + " milk") if milk not in ["none", ""] else "no milk"
+    syrup_str = (syrup + " syrup") if syrup not in ["None", "none", ""] else ""
+    order_str = size + " " + drink_name
+    if milk_str != "no milk":
+        order_str += " with " + milk_str
+    if syrup_str:
+        order_str += ", " + syrup_str
+    if mods:
+        order_str += ", " + ", ".join(mods)
 
-Write exactly 2 short, witty, specific sentences (no more) describing this person based on their drink order.
-Be observational and slightly funny. Reference the specific drink details.
-Do not use emojis. Do not use hashtags. Do not introduce yourself. Just write the 2 sentences."""
+    prompt = (
+        "Someone just ordered a " + order_str + " at a university cafe. "
+        "A machine learning model predicted their personality type as "
+        "\"" + vibe_name + "\" with " + str(confidence) + "% confidence. "
+        "Write exactly 2 short, witty, specific sentences describing this person based on their drink order. "
+        "Be observational and slightly funny. Reference the specific drink details. "
+        "Do not use emojis. Do not use hashtags. Do not introduce yourself. Just write the 2 sentences."
+    )
 
     try:
-        response = requests.post(
-            "http://localhost:11434/api/generate",
-            json={
-                "model": "llama3.2",
-                "prompt": prompt,
-                "stream": False,
-                "options": {"temperature": 0.8, "num_predict": 80}
-            },
-            timeout=15
+        from groq import Groq
+        api_key = os.environ.get("GROQ_API_KEY")
+        if not api_key:
+            return None, False
+        client = Groq(api_key=api_key)
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=80,
+            temperature=0.8,
         )
-        if response.status_code == 200:
-            text = response.json().get("response", "").strip()
-            # Clean up any extra lines beyond 2 sentences
-            sentences = [s.strip() for s in text.replace("\n", " ").split(".") if s.strip()]
-            result = ". ".join(sentences[:2])
-            if result and not result.endswith("."):
-                result += "."
-            return result, True
-    except requests.exceptions.ConnectionError:
-        pass
+        text = response.choices[0].message.content.strip()
+        parts = [s.strip() for s in text.replace("\n", " ").split(".") if s.strip()]
+        result = ". ".join(parts[:2])
+        if result and not result.endswith("."):
+            result += "."
+        return result, True
     except Exception:
-        pass
-
-    # Fallback if Ollama not running
-    return None, False
+        return None, False
 
 # ── Drink catalogue ────────────────────────────────────────────────────────────
 MENU = {
     "Hot Coffee": [
-        {"key":"americano",   "name":"Caffe Americano",         "cal":{"tall":15,"grande":25,"venti":30},    "img":"americano",      "cat":"espresso","hot":True},
-        {"key":"cappuccino",  "name":"Cappuccino",               "cal":{"tall":80,"grande":140,"venti":200},  "img":"cappuccino",     "cat":"espresso","hot":True},
-        {"key":"caffe_mocha", "name":"Caffe Mocha",              "cal":{"tall":290,"grande":370,"venti":470}, "img":"caffe_mocha",    "cat":"espresso","hot":True},
-        {"key":"white_mocha", "name":"White Chocolate Mocha",    "cal":{"tall":360,"grande":470,"venti":580}, "img":"white_mocha",    "cat":"espresso","hot":True},
-        {"key":"caramel_mac", "name":"Caramel Macchiato",        "cal":{"tall":190,"grande":250,"venti":330}, "img":"caramel_mac",    "cat":"espresso","hot":True},
-        {"key":"flat_white",  "name":"Flat White",               "cal":{"tall":170,"grande":220,"venti":300}, "img":"flat_white",     "cat":"espresso","hot":True},
-        {"key":"cafe_latte",  "name":"Caffe Latte",              "cal":{"tall":190,"grande":240,"venti":290}, "img":"cafe_latte",     "cat":"espresso","hot":True},
-        {"key":"hot_choc",    "name":"Hot Chocolate",            "cal":{"tall":300,"grande":400,"venti":520}, "img":"hot_choc",       "cat":"hot",     "hot":True},
+        {"key":"americano",   "name":"Caffe Americano",          "cal":{"tall":15,"grande":25,"venti":30},    "img":"americano",      "cat":"espresso","hot":True},
+        {"key":"cappuccino",  "name":"Cappuccino",                "cal":{"tall":80,"grande":140,"venti":200},  "img":"cappuccino",     "cat":"espresso","hot":True},
+        {"key":"caffe_mocha", "name":"Caffe Mocha",               "cal":{"tall":290,"grande":370,"venti":470}, "img":"caffe_mocha",    "cat":"espresso","hot":True},
+        {"key":"white_mocha", "name":"White Chocolate Mocha",     "cal":{"tall":360,"grande":470,"venti":580}, "img":"white_mocha",    "cat":"espresso","hot":True},
+        {"key":"caramel_mac", "name":"Caramel Macchiato",         "cal":{"tall":190,"grande":250,"venti":330}, "img":"caramel_mac",    "cat":"espresso","hot":True},
+        {"key":"flat_white",  "name":"Flat White",                "cal":{"tall":170,"grande":220,"venti":300}, "img":"flat_white",     "cat":"espresso","hot":True},
+        {"key":"cafe_latte",  "name":"Caffe Latte",               "cal":{"tall":190,"grande":240,"venti":290}, "img":"cafe_latte",     "cat":"espresso","hot":True},
+        {"key":"hot_choc",    "name":"Hot Chocolate",             "cal":{"tall":300,"grande":400,"venti":520}, "img":"hot_choc",       "cat":"hot",     "hot":True},
     ],
     "Cold Coffee": [
-        {"key":"cold_brew",      "name":"Cold Brew",                               "cal":{"tall":5,"grande":5,"venti":5},       "img":"cold_brew",      "cat":"coffee",  "hot":False},
-        {"key":"vscb",           "name":"Vanilla Sweet Cream Cold Brew",           "cal":{"tall":110,"grande":200,"venti":320}, "img":"vscb",           "cat":"coffee",  "hot":False},
-        {"key":"iced_latte",     "name":"Iced Caffe Latte",                        "cal":{"tall":130,"grande":190,"venti":250}, "img":"iced_latte",     "cat":"espresso","hot":False},
-        {"key":"iced_mac",       "name":"Iced Caramel Macchiato",                  "cal":{"tall":180,"grande":250,"venti":330}, "img":"iced_mac",       "cat":"espresso","hot":False},
-        {"key":"brown_sugar",    "name":"Iced Brown Sugar Oatmilk Shaken Espresso","cal":{"tall":120,"grande":200,"venti":290}, "img":"brown_sugar",    "cat":"espresso","hot":False},
-        {"key":"iced_mocha",     "name":"Iced Caffe Mocha",                        "cal":{"tall":250,"grande":350,"venti":450}, "img":"iced_mocha",     "cat":"espresso","hot":False},
-        {"key":"iced_americano", "name":"Iced Caffe Americano",                    "cal":{"tall":15,"grande":25,"venti":30},    "img":"iced_americano", "cat":"espresso","hot":False},
+        {"key":"cold_brew",      "name":"Cold Brew",                                "cal":{"tall":5,"grande":5,"venti":5},       "img":"cold_brew",      "cat":"coffee",  "hot":False},
+        {"key":"vscb",           "name":"Vanilla Sweet Cream Cold Brew",            "cal":{"tall":110,"grande":200,"venti":320}, "img":"vscb",           "cat":"coffee",  "hot":False},
+        {"key":"iced_latte",     "name":"Iced Caffe Latte",                         "cal":{"tall":130,"grande":190,"venti":250}, "img":"iced_latte",     "cat":"espresso","hot":False},
+        {"key":"iced_mac",       "name":"Iced Caramel Macchiato",                   "cal":{"tall":180,"grande":250,"venti":330}, "img":"iced_mac",       "cat":"espresso","hot":False},
+        {"key":"brown_sugar",    "name":"Iced Brown Sugar Oatmilk Shaken Espresso", "cal":{"tall":120,"grande":200,"venti":290}, "img":"brown_sugar",    "cat":"espresso","hot":False},
+        {"key":"iced_mocha",     "name":"Iced Caffe Mocha",                         "cal":{"tall":250,"grande":350,"venti":450}, "img":"iced_mocha",     "cat":"espresso","hot":False},
+        {"key":"iced_americano", "name":"Iced Caffe Americano",                     "cal":{"tall":15,"grande":25,"venti":30},    "img":"iced_americano", "cat":"espresso","hot":False},
     ],
     "Matcha & Tea": [
         {"key":"iced_matcha",     "name":"Iced Matcha Latte",          "cal":{"tall":200,"grande":280,"venti":360}, "img":"iced_matcha",     "cat":"latte","hot":False},
         {"key":"matcha_latte",    "name":"Matcha Latte",               "cal":{"tall":200,"grande":240,"venti":310}, "img":"matcha_latte",    "cat":"latte","hot":True},
         {"key":"lavender_matcha", "name":"Iced Lavender Cream Matcha", "cal":{"tall":230,"grande":310,"venti":400}, "img":"lavender_matcha", "cat":"latte","hot":False},
-        {"key":"chai_latte",      "name":"Chai Latte",                 "cal":{"tall":240,"grande":310,"venti":380}, "img":"chai_latte",      "cat":"tea", "hot":True},
-        {"key":"london_fog",      "name":"London Fog Latte",           "cal":{"tall":200,"grande":250,"venti":320}, "img":"london_fog",      "cat":"tea", "hot":True},
-        {"key":"honey_citrus",    "name":"Honey Citrus Mint Tea",      "cal":{"tall":130,"grande":180,"venti":230}, "img":"honey_citrus",    "cat":"tea", "hot":True},
-        {"key":"earl_grey",       "name":"Earl Grey Tea",              "cal":{"tall":0,"grande":0,"venti":0},       "img":"earl_grey",       "cat":"tea", "hot":True},
+        {"key":"chai_latte",      "name":"Chai Latte",                 "cal":{"tall":240,"grande":310,"venti":380}, "img":"chai_latte",      "cat":"tea",  "hot":True},
+        {"key":"london_fog",      "name":"London Fog Latte",           "cal":{"tall":200,"grande":250,"venti":320}, "img":"london_fog",      "cat":"tea",  "hot":True},
+        {"key":"honey_citrus",    "name":"Honey Citrus Mint Tea",      "cal":{"tall":130,"grande":180,"venti":230}, "img":"honey_citrus",    "cat":"tea",  "hot":True},
+        {"key":"earl_grey",       "name":"Earl Grey Tea",              "cal":{"tall":0,"grande":0,"venti":0},       "img":"earl_grey",       "cat":"tea",  "hot":True},
     ],
     "Refreshers": [
         {"key":"strawberry_acai",    "name":"Strawberry Acai Refresher",          "cal":{"tall":90,"grande":130,"venti":200},  "img":"strawberry_acai",    "cat":"refresher","hot":False},
@@ -206,7 +206,7 @@ st.markdown("""
 <div class="top-bar">
   <div>
     <h1>Quench Cafe · Vibe Predictor</h1>
-    <p>Random Forest classifier + Llama 3.2 via Ollama · UW Center Table · Winter 2026</p>
+    <p>Random Forest classifier + Llama 3.1 via Groq · UW Center Table · Winter 2026</p>
   </div>
   <div style="display:flex;gap:12px">
     <div class="badge"><b>8,083</b>Orders</div>
@@ -232,18 +232,22 @@ with left:
             cal = drink["cal"].get("grande", 0)
             is_sel = drink["key"] == st.session_state["selected_drink"]
             if img_src:
-                st.markdown(f"""
-                <div class="drink-card" style="border-color:{'#00704a' if is_sel else '#e8e8e8'};{'background:#eaf4ef' if is_sel else ''}">
-                  <img src="{img_src}">
-                  <div class="drink-card-name">{drink['name']}</div>
-                  <div class="drink-card-cal">{f'{cal} cal' if cal else ''}</div>
-                </div>""", unsafe_allow_html=True)
-            if st.button(f"{'Selected' if is_sel else 'Select'}", key=f"b_{drink['key']}", use_container_width=True):
+                st.markdown(
+                    '<div class="drink-card" style="border-color:' +
+                    ('#00704a' if is_sel else '#e8e8e8') + ';' +
+                    ('background:#eaf4ef' if is_sel else '') + '">' +
+                    '<img src="' + img_src + '">' +
+                    '<div class="drink-card-name">' + drink['name'] + '</div>' +
+                    '<div class="drink-card-cal">' + (str(cal) + ' cal' if cal else '') + '</div>' +
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+            if st.button("Selected" if is_sel else "Select", key="b_" + drink['key'], use_container_width=True):
                 st.session_state["selected_drink"] = drink["key"]
                 st.rerun()
 
     drink_info = ALL_DRINKS.get(st.session_state["selected_drink"], drinks_in_cat[0])
-    st.markdown(f"**Selected:** *{drink_info['name']}*")
+    st.markdown("**Selected:** *" + drink_info['name'] + "*")
     st.markdown("---")
     st.markdown("#### Customise")
 
@@ -260,13 +264,12 @@ with left:
         no_ice        = st.checkbox("No ice")
 
     cal_show = drink_info["cal"].get(size, 0)
-    st.caption(f"{cal_show} cal · {size} · {'iced' if not drink_info['hot'] else 'hot'}")
+    st.caption(str(cal_show) + " cal · " + size + " · " + ("iced" if not drink_info["hot"] else "hot"))
     predict_btn = st.button("Read My Vibe", use_container_width=True)
 
 with right:
     st.markdown("#### Vibe Reading")
     if predict_btn:
-        # ── ML prediction ──────────────────────────────────────────────────────
         features  = build_features(
             st.session_state["selected_drink"], size, milk, syrup,
             extra_shot, extra_hot, cold_foam, whipped_cream, no_ice
@@ -280,7 +283,6 @@ with right:
         conf      = int(top_prob * 100)
         label     = meta["label"]
 
-        # ── LLM description via Ollama ─────────────────────────────────────────
         with st.spinner("Generating your vibe description..."):
             llm_desc, llm_ok = generate_description(
                 drink_info["name"], size, milk,
@@ -289,65 +291,70 @@ with right:
                 label, conf
             )
 
-        # ── Display result ─────────────────────────────────────────────────────
         llm_section = ""
         if llm_ok and llm_desc:
-            llm_section = f"""
-          <div class="llm-badge">Generated by Llama 3.2 via Ollama</div>
-          <div class="vibe-desc">{llm_desc}</div>"""
+            llm_section = (
+                '<div class="llm-badge">Generated by Llama 3.1 via Groq</div>'
+                '<div class="vibe-desc">' + llm_desc + '</div>'
+            )
 
-        st.markdown(f"""
-        <div class="vibe-result" style="background:{meta['color']}">
-          <div class="vibe-title">{label}</div>
-          <div class="vibe-conf">{conf}% model confidence</div>
-          {llm_section}
-        </div>""", unsafe_allow_html=True)
+        st.markdown(
+            '<div class="vibe-result" style="background:' + meta['color'] + '">'
+            '<div class="vibe-title">' + label + '</div>'
+            '<div class="vibe-conf">' + str(conf) + '% model confidence</div>'
+            + llm_section +
+            '</div>',
+            unsafe_allow_html=True
+        )
 
         if not llm_ok:
-            st.caption("Ollama not running — start it with `ollama serve` for AI-generated descriptions.")
+            st.caption("Groq API key not set or unavailable.")
 
-        # ── Probability breakdown ──────────────────────────────────────────────
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("**Full breakdown**")
         for vibe, prob in list(prob_dict.items())[:6]:
             vmeta = VIBE_META.get(vibe, {"label": vibe})
-            st.markdown(f"""
-            <div style="margin:8px 0">
-              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-                <span>{vmeta['label']}</span>
-                <span style="font-weight:700;color:#00704a">{prob*100:.0f}%</span>
-              </div>
-              <div style="height:6px;background:#e8f3ef;border-radius:3px;overflow:hidden">
-                <div style="height:100%;width:{prob*100:.0f}%;background:#00704a;border-radius:3px"></div>
-              </div>
-            </div>""", unsafe_allow_html=True)
+            st.markdown(
+                '<div style="margin:8px 0">'
+                '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">'
+                '<span>' + vmeta['label'] + '</span>'
+                '<span style="font-weight:700;color:#00704a">' + str(round(prob*100)) + '%</span>'
+                '</div>'
+                '<div style="height:6px;background:#e8f3ef;border-radius:3px;overflow:hidden">'
+                '<div style="height:100%;width:' + str(round(prob*100)) + '%;background:#00704a;border-radius:3px"></div>'
+                '</div></div>',
+                unsafe_allow_html=True
+            )
 
-        # ── Model note ─────────────────────────────────────────────────────────
-        st.markdown(f"""
-        <div class="model-note">
-          <strong>ML Model:</strong> Random Forest · 300 trees · balanced class weights<br>
-          <strong>Input:</strong> {drink_info['name']} · {size} · {milk} milk
-          {' · extra shot' if extra_shot else ''}
-          {' · extra hot' if extra_hot else ''}
-          {' · cold foam' if cold_foam else ''}<br>
-          <strong>LLM:</strong> Llama 3.2 (3B) running locally via Ollama · prompt includes drink details + ML prediction
-        </div>""", unsafe_allow_html=True)
+        st.markdown(
+            '<div class="model-note">'
+            '<strong>ML Model:</strong> Random Forest · 300 trees · balanced class weights<br>'
+            '<strong>Input:</strong> ' + drink_info['name'] + ' · ' + size + ' · ' + milk + ' milk'
+            + (' · extra shot' if extra_shot else '')
+            + (' · extra hot' if extra_hot else '')
+            + (' · cold foam' if cold_foam else '') +
+            '<br><strong>LLM:</strong> Llama 3.1 (8B) via Groq API · prompt includes drink details + ML prediction'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
     else:
-        st.markdown("""
-        <div style="background:#f7f7f7;border-radius:16px;padding:40px;text-align:center;margin-top:8px">
-          <div style="font-size:1rem;font-weight:600;color:#1e3932;margin-bottom:8px">
-            Select a drink and hit Read My Vibe
-          </div>
-          <div style="font-size:.85rem;color:#aaa;line-height:1.6">
-            Random Forest predicts your personality type.<br>
-            Llama 3.2 via Ollama generates a personalized description.<br><br>
-            Make sure <code>ollama serve</code> is running in a separate terminal.
-          </div>
-        </div>""", unsafe_allow_html=True)
+        st.markdown(
+            '<div style="background:#f7f7f7;border-radius:16px;padding:40px;text-align:center;margin-top:8px">'
+            '<div style="font-size:1rem;font-weight:600;color:#1e3932;margin-bottom:8px">'
+            'Select a drink and hit Read My Vibe</div>'
+            '<div style="font-size:.85rem;color:#aaa;line-height:1.6">'
+            'Random Forest predicts your personality type.<br>'
+            'Llama 3.1 via Groq generates a personalized description.'
+            '</div></div>',
+            unsafe_allow_html=True
+        )
 
 st.markdown("---")
-st.markdown("""<div style="text-align:center;font-size:.8rem;color:#aaa;padding:8px 0">
-  Quench Cafe · Vibe Predictor · Hariharan Sureshkumar · UW MS Data Science · Winter 2026<br>
-  Random Forest · 8,083 synthetic orders · Llama 3.2 via Ollama
-</div>""", unsafe_allow_html=True)
+st.markdown(
+    '<div style="text-align:center;font-size:.8rem;color:#aaa;padding:8px 0">'
+    'Quench Cafe · Vibe Predictor · Hariharan Sureshkumar · UW MS Data Science · Winter 2026<br>'
+    'Random Forest · 8,083 synthetic orders · Llama 3.1 via Groq'
+    '</div>',
+    unsafe_allow_html=True
+)
